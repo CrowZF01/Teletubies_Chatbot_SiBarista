@@ -1,5 +1,6 @@
 package com.felix_71241153.app.chatbot_sibarista;
 
+import database.Database;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -23,4 +24,13 @@ public class MainApp extends Application {
     public static void main(String[] args) {
         launch();
     }
+
+
+    public class TestKoneksi {
+        public static void main(String[] args) {
+            Database db = new Database();
+            db.cekKoneksi();
+        }
+    }
+
 }

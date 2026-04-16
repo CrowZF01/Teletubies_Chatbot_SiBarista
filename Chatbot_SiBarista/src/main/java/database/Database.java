@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Database {
-    private String url = "jdbc:mysql://localhost:3306/chatbot";
+    private String url = "jdbc:mysql://localhost:3306/sibarista";
     private String username = "root" ;
     private String password = "";
 
