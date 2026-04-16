@@ -1,61 +1,43 @@
 package service;
 
+import database.Database;
 import model.Produk;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChatbotService {
 
-    private final List<Produk> daftarProduk = new ArrayList<>();
+    public List<Produk> getDaftarProduk() throws SQLException {
+        List<Produk> list = new ArrayList<>();
+        String query = "SELECT * FROM produk";
 
-    public ChatbotService() {
-        initDummyData();
-    }
+        try (Connection conn = Database.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                list.add(new Produk(
+                        rs.getString("id_produk"),
+                        rs.getString("nama_produk"),
+                        rs.getString("kategori"),
+                        rs.getString("deskripsi"),
+                        rs.getInt("harga"),
+                        rs.getString("status_stok")
+                ));
+            }
 
-    // =========================================================
-    // DUMMY DATA (sementara untuk Day 2, nanti bisa diganti DB)
-    // =========================================================
-    private void initDummyData() {
-        daftarProduk.add(new Produk("P001", "Latte", "Coffee",
-                "Perpaduan espresso lembut dengan susu steamed.", 28000, "Tersedia"));
-
-        daftarProduk.add(new Produk("P002", "Mocha", "Coffee",
-                "Espresso dengan cokelat dan susu creamy.", 30000, "Tersedia"));
-
-        daftarProduk.add(new Produk("P003", "Americano", "Coffee",
-                "Espresso dengan tambahan air panas, ringan dan kuat.", 25000, "Tersedia"));
-
-        daftarProduk.add(new Produk("P004", "Espresso", "Coffee",
-                "Ekstrak kopi murni yang pekat dan beraroma.", 22000, "Tersedia"));
-
-        daftarProduk.add(new Produk("P005", "Matcha Latte", "Non-Coffee",
-                "Matcha premium dipadukan dengan susu creamy.", 32000, "Tersedia"));
-
-        daftarProduk.add(new Produk("P006", "Signature Chocolate", "Non-Coffee",
-                "Cokelat premium yang lembut dan kaya rasa.", 30000, "Tersedia"));
-
-        daftarProduk.add(new Produk("P007", "Lychee Tea", "Non-Coffee",
-                "Teh segar dengan aroma leci dan rasa manis ringan.", 26000, "Tersedia"));
-
-        daftarProduk.add(new Produk("P008", "Orange Juice", "Jus",
-                "Jus jeruk segar tanpa tambahan pengawet.", 24000, "Tersedia"));
-
-        daftarProduk.add(new Produk("P009", "Mango Juice", "Jus",
-                "Jus mangga manis dan segar.", 25000, "Tersedia"));
-
-        daftarProduk.add(new Produk("P010", "Brownies", "Snack",
-                "Brownies cokelat padat dengan tekstur lembut.", 20000, "Tersedia"));
-
-        daftarProduk.add(new Produk("P011", "Butter Croissant", "Snack",
-                "Pastry klasik renyah dengan aroma butter.", 22000, "Tersedia"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     // =========================================================
     // 1. prosesInput()  [WAJIB]
     // Method utama untuk memproses semua pesan user
     // =========================================================
-    public String prosesInput(String pesan) {
+    public String prosesInput(String pesan) throws SQLException {
         if (!validasiTeks(pesan)) {
             return "Silakan ketik pesan terlebih dahulu.";
         }
@@ -125,7 +107,7 @@ public class ChatbotService {
                 - Non-Coffee
                 - Jus
                 - Snack
-
+                
                 Ketik salah satu kategori di atas.
                 """;
     }
@@ -138,48 +120,59 @@ public class ChatbotService {
         hasil.append("Berikut daftar menu kategori ").append(kategori).append(":\n");
 
         boolean ditemukan = false;
+        String query = "SELECT produk.nama_produk FROM produk JOIN kategori ON produk.id_kategori = kategori.id_kategori WHERE kategori.nama_kategori = ?";
 
-        for (Produk produk : daftarProduk) {
-            if (produk.getNamaKategori().equalsIgnoreCase(kategori)) {
-                hasil.append("- ").append(produk.getNamaProduk()).append("\n");
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, kategori);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                hasil.append("- ").append(rs.getString("nama_produk")).append("\n");
                 ditemukan = true;
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Maaf, terjadi kesalahan saat mengakses database";
         }
 
         if (!ditemukan) {
-            return "Maaf, kategori " + kategori + " belum memiliki produk.";
+            return "Maaf, kategori " + kategori + " belum tersedia";
         }
-
-        hasil.append("\nKetik nama produk untuk melihat detail.");
+        hasil.append("\nKetik nama produk untuk melihat detail");
         return hasil.toString();
     }
+
 
     // =========================================================
     // 5. balasanDetail() [WAJIB]
     // Mengembalikan null jika tidak ditemukan
     // =========================================================
-    public String balasanDetail(String namaMenu) {
-        if (!validasiTeks(namaMenu)) {
-            return null;
-        }
-
+    public String balasanDetail(String namaMenu){
         String input = normalisasiInput(namaMenu);
+        String query = "SELECT produk.*, kategori.nama_kategori FROM produk JOIN kategori ON produk.id_kategori = kategori.id_kategori WHERE produk.nama_produk LIKE ?";
 
-        // cari exact match dulu
-        for (Produk produk : daftarProduk) {
-            if (normalisasiInput(produk.getNamaProduk()).equals(input)) {
-                return formatDetailProduk(produk);
+        try (Connection conn = Database.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1,"%" + input + "%");
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()){
+                Produk p = new Produk(
+                        rs.getString("id_produk"),
+                        rs.getString("nama_produk"),
+                        rs.getString("nama_kategori"),
+                        rs.getString("deskripsi"),
+                        rs.getInt("harga"),
+                        rs.getString("status_stok")
+                );
+                return formatDetailProduk(p);
             }
+        }catch (SQLException e){
+            e.printStackTrace();
         }
-
-        // cari contains match (lebih fleksibel)
-        for (Produk produk : daftarProduk) {
-            if (normalisasiInput(produk.getNamaProduk()).contains(input)) {
-                return formatDetailProduk(produk);
-            }
-        }
-
-        return null;
+        return  null;
     }
 
     // =========================================================
@@ -283,7 +276,5 @@ public class ChatbotService {
         return "Rp" + angka;
     }
 
-    public List<Produk> getDaftarProduk() {
-        return daftarProduk;
-    }
+
 }

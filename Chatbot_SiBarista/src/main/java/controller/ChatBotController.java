@@ -11,6 +11,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.sql.SQLException;
+
 public class ChatBotController {
 
     // --- Deklarasi elemen FXML ---
@@ -42,7 +44,7 @@ public class ChatBotController {
         // Nanti tambahkan logika untuk mengganti scene ke login-view.fxml di sini
     }
 
-    private void kirimPesanDari(TextField field, boolean perluTransisi) {
+    private void kirimPesanDari(TextField field, boolean perluTransisi) throws SQLException {
         String input = field.getText().trim();
         if (!input.isEmpty()) {
             if (perluTransisi) {
@@ -54,19 +56,19 @@ public class ChatBotController {
     }
 
     @FXML
-    private void handleSend(ActionEvent event) {
+    private void handleSend(ActionEvent event) throws SQLException {
         // Dipanggil dari TextField halaman Welcome
         kirimPesanDari(messageField, true);
     }
 
     @FXML
-    private void handleSendFromChat(ActionEvent event) {
+    private void handleSendFromChat(ActionEvent event) throws SQLException {
         // Dipanggil dari TextField saat area chat sudah aktif
         kirimPesanDari(chatInputField, false);
     }
 
     @FXML
-    private void handleMenu(ActionEvent event) {
+    private void handleMenu(ActionEvent event) throws SQLException {
         // Jika user klik tombol "Menu", kita anggap dia mengetik "Menu"
         String input = "Menu";
         if (welcomeBox.isVisible()) {
@@ -87,7 +89,7 @@ public class ChatBotController {
         chatAreaWrapper.setManaged(true);
     }
 
-    private void prosesInput(String pesanUser) {
+    private void prosesInput(String pesanUser) throws SQLException {
         tambahGelembungChat(pesanUser, true);
         String balasanBot = chatbotService.prosesInput(pesanUser);
         tambahGelembungChat(balasanBot, false);
