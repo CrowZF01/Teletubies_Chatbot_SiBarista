@@ -5,8 +5,22 @@ public class Produk {
     private String namaProduk;
     private String namaKategori;
     private String deskripsi;
-    private Integer harga;
-    private String statusstok;
+    private int harga;
+    private String statusStok;
+
+    // Constructor kosong
+    public Produk() {
+    }
+
+    // Constructor lengkap
+    public Produk(String idProduk, String namaProduk, String namaKategori, String deskripsi, int harga, String statusStok) {
+        this.idProduk = idProduk;
+        this.namaProduk = namaProduk;
+        this.namaKategori = namaKategori;
+        this.deskripsi = deskripsi;
+        this.harga = harga;
+        this.statusStok = statusStok;
+    }
 
     public String getIdProduk() {
         return idProduk;
@@ -40,23 +54,23 @@ public class Produk {
         this.deskripsi = deskripsi;
     }
 
-    public Integer getHarga() {
+    public int getHarga() {
         return harga;
     }
 
-    public void setHarga(Integer harga) {
+    public void setHarga(int harga) {
         this.harga = harga;
     }
 
-    public String getStatusstok() {
-        return statusstok;
+    public String getStatusStok() {
+        return statusStok;
     }
 
-    public void setStatusstok(String statusstok) {
-        this.statusstok = statusstok;
+    public void setStatusStok(String statusStok) {
+        this.statusStok = statusStok;
     }
 
-    public String getDetailProduk(){
-        return String.format("%s (%s) - %d [%s]", namaProduk,namaKategori, harga, statusstok);
+    public String getDetailProduk() {
+        return String.format("%s (%s) - Rp%d [%s]", namaProduk, namaKategori, harga, statusStok);
     }
 }

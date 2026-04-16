@@ -1,5 +1,6 @@
 package controller;
 
+import service.ChatbotService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -23,7 +24,7 @@ public class ChatBotController {
     @FXML private TextField chatInputField;
 
     // TODO: Nanti kamu bisa panggil ChatbotService di sini
-    // private ChatbotService chatbotService = new ChatbotService();
+    private ChatbotService chatbotService = new ChatbotService();
 
     @FXML
     public void initialize() {
@@ -88,20 +89,7 @@ public class ChatBotController {
 
     private void prosesInput(String pesanUser) {
         tambahGelembungChat(pesanUser, true);
-        String balasanBot;
-        if (pesanUser.equalsIgnoreCase("Menu")) {
-            balasanBot = "Baik! Silakan ketik kategori menu yang ingin Anda jelajahi hari ini:\n- Coffee\n- Non-Coffee\n- Jus\n- Snack";
-        } else if (pesanUser.equalsIgnoreCase("Coffee")) {
-            balasanBot = "Pilihan yang mantap! Berikut adalah daftar menu Coffee Based:\n- Latte\n- Mocha\n- Americano";
-        } else if (pesanUser.equalsIgnoreCase("Non-Coffee")) {
-            balasanBot = "Berikut adalah daftar menu Non-Coffee:\n- Matcha Latte\n- Signature Chocolate";
-        } else if (pesanUser.equalsIgnoreCase("Jus")) {
-            balasanBot = "Berikut adalah pilihan Jus:\n- Orange Juice\n- Mango Juice";
-        } else if (pesanUser.equalsIgnoreCase("Snack")) {
-            balasanBot = "Berikut adalah pilihan Snack:\n- Brownies\n- Croissant";
-        } else {
-            balasanBot = "Halo, saya SiBarista. Ketik 'Menu' untuk melihat daftar kategori yang tersedia.";
-        }
+        String balasanBot = chatbotService.prosesInput(pesanUser);
         tambahGelembungChat(balasanBot, false);
     }
 
