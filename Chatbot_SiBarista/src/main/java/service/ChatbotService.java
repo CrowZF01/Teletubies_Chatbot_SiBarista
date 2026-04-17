@@ -72,9 +72,6 @@ public class ChatbotService {
             return balasanKategori("Non-Coffee");
         }
 
-        if (input.equals("jus")) {
-            return balasanKategori("Jus");
-        }
 
         if (input.equals("snack")) {
             return balasanKategori("Snack");
@@ -105,7 +102,6 @@ public class ChatbotService {
                 Baik! Silakan pilih kategori menu yang ingin Anda jelajahi:
                 - Coffee
                 - Non-Coffee
-                - Jus
                 - Snack
                 
                 Ketik salah satu kategori di atas.
@@ -186,10 +182,9 @@ public class ChatbotService {
                 - Menu
                 - Coffee
                 - Non-Coffee
-                - Jus
                 - Snack
                 - Latte
-                - Brownies
+                - Croissant
 
                 Jika butuh panduan, ketik: Help
                 """;
@@ -235,13 +230,12 @@ public class ChatbotService {
                 2. Ketik kategori seperti:
                    - Coffee
                    - Non-Coffee
-                   - Jus
                    - Snack
                 3. Ketik nama produk untuk melihat detail.
                    Contoh:
                    - Latte
                    - Espresso
-                   - Brownies
+                   - Croissant
 
                 Jika ingin mulai dari awal, ketik "Menu".
                 """;
