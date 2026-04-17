@@ -45,36 +45,35 @@ public class ChatbotService {
         String input = normalisasiInput(pesan);
 
         // sapaan
-        if (input.equals("halo") || input.equals("hai") || input.equals("hi")
-                || input.equals("selamat pagi") || input.equals("selamat siang")
-                || input.equals("selamat sore") || input.equals("selamat malam")) {
+        if (input.contains("halo") || input.contains("hai") || input.contains("hi")
+                || input.contains("selamat pagi") || input.contains("selamat siang")
+                || input.contains("selamat sore") || input.contains("selamat malam")) {
             return balasanSapaan();
         }
 
         // bantuan / help
-        if (input.equals("bantuan") || input.equals("help")
-                || input.equals("tolong") || input.equals("cara pakai")
-                || input.equals("harus ketik apa")) {
+        if (input.contains("bantuan") || input.contains("help")
+                || input.contains("tolong") || input.contains("cara pakai")
+                || input.contains("harus ketik apa")) {
             return balasanBantuan();
         }
 
-        // menu
-        if (input.equals("menu") || input.equals("daftar menu") || input.equals("lihat menu")) {
-            return balasanMenu();
-        }
-
-        // kategori
-        if (input.equals("coffee")) {
-            return balasanKategori("Coffee");
-        }
-
-        if (input.equals("non-coffee") || input.equals("non coffee")) {
+        // kategori (lebih spesifik, jadi dicek dulu)
+        if (input.contains("non-coffee") || input.contains("non coffee")) {
             return balasanKategori("Non-Coffee");
         }
 
+        if (input.contains("coffee")) {
+            return balasanKategori("Coffee");
+        }
 
-        if (input.equals("snack")) {
-            return balasanKategori("Snack");
+        if (input.contains("snack")) {
+            return balasanKategori("Snacks"); // sesuaikan dengan nama kategori di DB
+        }
+
+        // menu umum
+        if (input.contains("menu")) {
+            return balasanMenu();
         }
 
         // detail produk
@@ -86,6 +85,7 @@ public class ChatbotService {
         // fallback
         return balasanFallback();
     }
+
 
     // =========================================================
     // 2. validasiTeks() [WAJIB]
