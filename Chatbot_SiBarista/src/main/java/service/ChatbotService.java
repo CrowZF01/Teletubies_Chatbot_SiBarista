@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatbotService {
-    private String state = "beranda";
 
     public List<Produk> getDaftarProduk() throws SQLException {
         List<Produk> list = new ArrayList<>();
@@ -61,18 +60,12 @@ public class ChatbotService {
         }
         // menu umum
         if (input.contains("menu")) {
-            state = "sedang dikategori";
             return balasanMenu();
         }
 
-        if (state.equals("beranda")){
-            // fallback
-            return balasanFallback();
-        }
 
 
 
-        if (state.equals("sedang dikategori")) {
             // kategori (lebih spesifik, jadi dicek dulu)
             if (input.contains("non-coffee") || input.contains("non coffee")) {
                 return balasanKategori("Non-Coffee");
@@ -85,11 +78,9 @@ public class ChatbotService {
             if (input.contains("snack")) {
                 return balasanKategori("Snacks"); // sesuaikan dengan nama kategori di DB
             }
-            return "maaf kategori tersebut tidak ada dimenu kami";
-        }
 
 
-        if (state.equals("sedang didetail")) {
+
             String produkDitemukan = cariNamaProdukDalamKalimat(input);
             if (produkDitemukan != null) {
                 return balasanDetail(produkDitemukan);
@@ -99,8 +90,6 @@ public class ChatbotService {
             if (detail != null) {
                 return detail;
             }
-            return "maaf produk tersebut tidak ada dimenu kami";
-        }
         // fallback
         return balasanFallback();
     }
@@ -133,7 +122,6 @@ public class ChatbotService {
     public String balasanKategori(String kategori) {
         StringBuilder hasil = new StringBuilder();
         hasil.append("Berikut daftar menu kategori ").append(kategori).append(":\n");
-        state = "sedang didetail";
 
         boolean ditemukan = false;
         String query = "SELECT produk.nama_produk FROM produk JOIN kategori ON produk.id_kategori = kategori.id_kategori WHERE kategori.nama_kategori = ?";
@@ -168,7 +156,6 @@ public class ChatbotService {
     public String balasanDetail(String namaMenu){
         String input = normalisasiInput(namaMenu);
         String query = "SELECT produk.*, kategori.nama_kategori FROM produk JOIN kategori ON produk.id_kategori = kategori.id_kategori WHERE produk.nama_produk LIKE ?";
-        state = "sedang didetail";
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1,"%" + input + "%");
@@ -194,7 +181,6 @@ public class ChatbotService {
 
     public String cariNamaProdukDalamKalimat(String input){
         String query = "SELECT nama_produk FROM produk";
-        state = "sedang didetail";
 
         try (Connection conn = Database.getConnection();
              Statement stmt = conn.createStatement();
