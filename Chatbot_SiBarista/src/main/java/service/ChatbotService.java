@@ -68,7 +68,7 @@ public class ChatbotService {
             return balasanKategori("Coffee");
         }
 
-        if (input.contains("snack")) {
+        if (input.contains("snacks") || input.contains("snack")) {
             return balasanKategori("Snacks"); // sesuaikan dengan nama kategori di DB
         }
 
@@ -77,16 +77,17 @@ public class ChatbotService {
             return balasanMenu();
         }
 
+        String produkDitemukan = cariNamaProdukDalamKalimat(input);
+        if (produkDitemukan != null){
+            return balasanDetail(produkDitemukan);
+        }
         // detail produk
         String detail = balasanDetail(input);
         if (detail != null) {
             return detail;
         }
 
-        String produkDitemukan = cariNamaProdukDalamKalimat(input);
-        if (produkDitemukan != null){
-            return balasanDetail(produkDitemukan);
-        }
+
         // fallback
         return balasanFallback();
     }
@@ -209,7 +210,7 @@ public class ChatbotService {
                 - Menu
                 - Coffee
                 - Non-Coffee
-                - Snack
+                - Snacks
                 - Latte
                 - Croissant
 
@@ -257,7 +258,7 @@ public class ChatbotService {
                 2. Ketik kategori seperti:
                    - Coffee
                    - Non-Coffee
-                   - Snack
+                   - Snacks
                 3. Ketik nama produk untuk melihat detail.
                    Contoh:
                    - Latte
