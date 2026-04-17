@@ -5,6 +5,7 @@ module com.felix_71241153.app.chatbot_sibarista {
     requires org.controlsfx.controls;
     requires org.kordamp.bootstrapfx.core;
     requires java.sql;
+    requires java.desktop;
 
     opens com.felix_71241153.app.chatbot_sibarista to javafx.fxml;
     exports com.felix_71241153.app.chatbot_sibarista;

@@ -3,6 +3,7 @@ package service;
 import database.Database;
 import model.Produk;
 
+import java.awt.image.Raster;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +83,10 @@ public class ChatbotService {
             return detail;
         }
 
+        String produkDitemukan = cariNamaProdukDalamKalimat(input);
+        if (produkDitemukan != null){
+            return balasanDetail(produkDitemukan);
+        }
         // fallback
         return balasanFallback();
     }
@@ -169,6 +174,28 @@ public class ChatbotService {
             e.printStackTrace();
         }
         return  null;
+    }
+
+
+    public String cariNamaProdukDalamKalimat(String input){
+        String query = "SELECT nama_produk FROM produk";
+
+
+        try (Connection conn = Database.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()){
+                String namaProduk = rs.getString("nama_produk").toLowerCase();
+
+                if (input.contains(namaProduk)){
+                    return namaProduk;
+                }
+
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     // =========================================================
