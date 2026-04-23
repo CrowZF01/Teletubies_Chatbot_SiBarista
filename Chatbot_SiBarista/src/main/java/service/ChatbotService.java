@@ -3,7 +3,6 @@ package service;
 import database.Database;
 import model.Produk;
 
-import java.awt.image.Raster;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,54 +44,54 @@ public class ChatbotService {
 
         String input = normalisasiInput(pesan);
 
-        // sapaan
-        if (input.contains("halo") || input.contains("hai") || input.contains("hi")
-                || input.contains("selamat pagi") || input.contains("selamat siang")
-                || input.contains("selamat sore") || input.contains("selamat malam")) {
+        // 1. Sapaan
+        if (input.equals("halo") || input.equals("hai") || input.equals("hi")
+                || input.equals("selamat pagi") || input.equals("selamat siang")
+                || input.equals("selamat sore") || input.equals("selamat malam")) {
             return balasanSapaan();
         }
 
-        // bantuan / help
+        // 2. Bantuan
         if (input.contains("bantuan") || input.contains("help")
                 || input.contains("tolong") || input.contains("cara pakai")
                 || input.contains("harus ketik apa")) {
             return balasanBantuan();
         }
-        // menu umum
+
+        // 3. Kategori spesifik dulu (lebih spesifik daripada "menu")
+        if (input.contains("non-coffee") || input.contains("non coffee")) {
+            return balasanKategori("Non-Coffee");
+        }
+
+        if (input.contains("coffee")) {
+            return balasanKategori("Coffee");
+        }
+
+        if (input.contains("snack")) {
+            return balasanKategori("Snacks");
+        }
+
+        // 4. Menu umum
         if (input.contains("menu")) {
             return balasanMenu();
         }
 
+        // 5. Cari nama produk di dalam kalimat user
+        String produkDitemukan = cariNamaProdukDalamKalimat(input);
+        if (produkDitemukan != null) {
+            return balasanDetail(produkDitemukan);
+        }
 
+        // 6. Kalau user mengetik nama produk langsung
+        String detail = balasanDetail(input);
+        if (detail != null) {
+            return detail;
+        }
 
-
-            // kategori (lebih spesifik, jadi dicek dulu)
-            if (input.contains("non-coffee") || input.contains("non coffee")) {
-                return balasanKategori("Non-Coffee");
-            }
-
-            if (input.contains("coffee")) {
-                return balasanKategori("Coffee");
-            }
-
-            if (input.contains("snack")) {
-                return balasanKategori("Snacks"); // sesuaikan dengan nama kategori di DB
-            }
-
-
-
-            String produkDitemukan = cariNamaProdukDalamKalimat(input);
-            if (produkDitemukan != null) {
-                return balasanDetail(produkDitemukan);
-            }
-            // detail produk
-            String detail = balasanDetail(input);
-            if (detail != null) {
-                return detail;
-            }
-        // fallback
+        // 7. Fallback
         return balasanFallback();
     }
+
 
 
     // =========================================================
@@ -153,15 +152,24 @@ public class ChatbotService {
     // 5. balasanDetail() [WAJIB]
     // Mengembalikan null jika tidak ditemukan
     // =========================================================
-    public String balasanDetail(String namaMenu){
+    public String balasanDetail(String namaMenu) {
         String input = normalisasiInput(namaMenu);
-        String query = "SELECT produk.*, kategori.nama_kategori FROM produk JOIN kategori ON produk.id_kategori = kategori.id_kategori WHERE produk.nama_produk LIKE ?";
+
+        String query = """
+            SELECT produk.*, kategori.nama_kategori
+            FROM produk
+            JOIN kategori ON produk.id_kategori = kategori.id_kategori
+            WHERE LOWER(produk.nama_produk) = LOWER(?)
+            LIMIT 1
+            """;
+
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1,"%" + input + "%");
+
+            pstmt.setString(1, input);
             ResultSet rs = pstmt.executeQuery();
 
-            if(rs.next()){
+            if (rs.next()) {
                 Produk p = new Produk(
                         rs.getString("id_produk"),
                         rs.getString("nama_produk"),
@@ -172,10 +180,12 @@ public class ChatbotService {
                 );
                 return formatDetailProduk(p);
             }
-        }catch (SQLException e){
+
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-        return  null;
+
+        return null;
     }
 
 
