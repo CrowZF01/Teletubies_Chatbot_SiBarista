@@ -1,14 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="CONTROLLER_NAME"
-            prefHeight="400.0" prefWidth="600.0">
+<VBox prefWidth="450.0" spacing="15.0" style="-fx-background-color: #FFF4E0; -fx-border-color: #C0A080; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProductFormController">
+    <padding>
+        <Insets bottom="25.0" left="25.0" right="25.0" top="20.0" />
+    </padding>
+    <children>
+        <Label fx:id="lblTitle" text="Tambah Produk Baru" textFill="#4B3832">
+            <font>
+                <Font name="System Bold" size="20.0" />
+            </font>
+        </Label>
 
-</AnchorPane>
+        <GridPane hgap="10.0" vgap="15.0">
+            <children>
+                <Label text="ID Produk:" GridPane.rowIndex="0" />
+                <TextField fx:id="txtId" promptText="Contoh: COF01" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                <Label text="Nama Menu:" GridPane.rowIndex="1" />
+                <TextField fx:id="txtNama" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                <Label text="Kategori:" GridPane.rowIndex="2" />
+                <ComboBox fx:id="cbKategori" prefWidth="250.0" promptText="Pilih Kategori" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                <Label text="Harga (Rp):" GridPane.rowIndex="3" />
+                <TextField fx:id="txtHarga" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                <Label text="Stok:" GridPane.rowIndex="4" />
+                <ComboBox fx:id="cbStok" prefWidth="250.0" promptText="Status" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+                <Label text="Deskripsi:" GridPane.rowIndex="5" />
+                <TextArea fx:id="txtDeskripsi" prefHeight="80.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            </children>
+        </GridPane>
+
+        <HBox alignment="CENTER_RIGHT" spacing="10.0">
+            <children>
+                <Button mnemonicParsing="false" onAction="#handleCancel" prefWidth="80.0" style="-fx-background-color: #E5E7EB; -fx-text-fill: #374151;" text="Batal" />
+                <Button mnemonicParsing="false" onAction="#handleSave" prefWidth="100.0" style="-fx-background-color: #4B3832; -fx-text-fill: white; -fx-font-weight: bold;" text="Simpan" />
+            </children>
+            <VBox.margin>
+                <Insets top="10.0" />
+            </VBox.margin>
+        </HBox>
+    </children>
+</VBox>

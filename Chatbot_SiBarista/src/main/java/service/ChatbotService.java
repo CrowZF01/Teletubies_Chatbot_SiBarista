@@ -12,24 +12,28 @@ public class ChatbotService {
 
     public List<Produk> getDaftarProduk() throws SQLException {
         List<Produk> list = new ArrayList<>();
-        String query = "SELECT * FROM produk";
+
+        // Query dengan JOIN untuk mendapatkan nama_kategori
+        String query = "SELECT p.*, k.nama_kategori " +
+                "FROM produk p " +
+                "JOIN kategori k ON p.id_kategori = k.id_kategori";
 
         try (Connection conn = Database.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
+
             while (rs.next()) {
                 list.add(new Produk(
                         rs.getString("id_produk"),
                         rs.getString("nama_produk"),
-                        rs.getString("kategori"),
+                        rs.getString("nama_kategori"), // Hasil JOIN
                         rs.getString("deskripsi"),
                         rs.getInt("harga"),
                         rs.getString("status_stok")
                 ));
             }
-
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Kesalahan Query: " + e.getMessage());
         }
         return list;
     }

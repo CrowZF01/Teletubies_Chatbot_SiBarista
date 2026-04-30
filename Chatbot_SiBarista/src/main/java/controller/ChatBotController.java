@@ -7,9 +7,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.Node;
 
 import java.sql.SQLException;
 
@@ -25,13 +27,19 @@ public class ChatBotController {
     @FXML private VBox chatContainer;
     @FXML private TextField chatInputField;
 
-    // TODO: Nanti kamu bisa panggil ChatbotService di sini
+    // ===== PALETTE COFFEE =====
+    // Espresso Black  : #1C0A00
+    // Dark Roast      : #3D1A00
+    // Mocha           : #6B3A2A
+    // Sienna/Cinnamon : #A0522D
+    // Latte Tan       : #C8A882
+    // Parchment Cream : #F0E6D3
+    // Steamed Milk    : #FBF7F0
+
     private ChatbotService chatbotService = new ChatbotService();
 
     @FXML
     public void initialize() {
-        // Method ini otomatis dipanggil saat FXML di-load.
-        // Pastikan area chat disembunyikan di awal.
         chatAreaWrapper.setVisible(false);
         chatAreaWrapper.setManaged(false);
     }
@@ -40,8 +48,25 @@ public class ChatBotController {
 
     @FXML
     private void handleAdminMode(ActionEvent event) {
-        System.out.println("Tombol Admin Mode ditekan!");
-        // Nanti tambahkan logika untuk mengganti scene ke login-view.fxml di sini
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/felix_71241153/app/chatbot_sibarista/login-view.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            javafx.stage.Stage stage = (javafx.stage.Stage) adminModeButton.getScene().getWindow();
+
+            // 1. Simpan ukuran jendela saat ini
+            double width = stage.getWidth();
+            double height = stage.getHeight();
+
+            // 2. Set scene baru dengan ukuran yang sama dengan jendela sebelumnya
+            javafx.scene.Scene scene = new javafx.scene.Scene(root, width, height);
+
+            stage.setScene(scene);
+            stage.setTitle("Admin Login - SiBarista");
+
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void kirimPesanDari(TextField field, boolean perluTransisi) throws SQLException {
@@ -52,39 +77,35 @@ public class ChatBotController {
             }
             prosesInput(input);
             field.clear();
+            scrollKeBelow();
         }
     }
 
     @FXML
     private void handleSend(ActionEvent event) throws SQLException {
-        // Dipanggil dari TextField halaman Welcome
         kirimPesanDari(messageField, true);
     }
 
     @FXML
     private void handleSendFromChat(ActionEvent event) throws SQLException {
-        // Dipanggil dari TextField saat area chat sudah aktif
         kirimPesanDari(chatInputField, false);
     }
 
     @FXML
     private void handleMenu(ActionEvent event) throws SQLException {
-        // Jika user klik tombol "Menu", kita anggap dia mengetik "Menu"
         String input = "Menu";
         if (welcomeBox.isVisible()) {
             transisiKeModeChat();
         }
         prosesInput(input);
+        scrollKeBelow();
     }
 
     // --- Logika Internal Controller ---
 
     private void transisiKeModeChat() {
-        // Hilangkan halaman Welcome
         welcomeBox.setVisible(false);
         welcomeBox.setManaged(false);
-
-        // Tampilkan area obrolan
         chatAreaWrapper.setVisible(true);
         chatAreaWrapper.setManaged(true);
     }
@@ -95,26 +116,82 @@ public class ChatBotController {
         tambahGelembungChat(balasanBot, false);
     }
 
+    /**
+     * Auto-scroll ke pesan terbawah setelah pesan baru ditambahkan.
+     */
+    private void scrollKeBelow() {
+        // Cari ScrollPane yang menjadi parent dari chatContainer
+        javafx.application.Platform.runLater(() -> {
+            for (Node node : chatAreaWrapper.getChildren()) {
+                if (node instanceof ScrollPane scrollPane) {
+                    scrollPane.setVvalue(1.0);
+                    break;
+                }
+            }
+        });
+    }
 
+    /**
+     * Menambahkan gelembung chat ke dalam chatContainer.
+     *
+     * Tampilan:
+     *  - USER  : kanan, background Espresso (#1C0A00), teks Steamed Milk (#FBF7F0)
+     *            dengan sudut: 15 15 0 15
+     *  - BOT   : kiri, background Latte Tan (#C8A882) tipis / Parchment (#F0E6D3),
+     *            teks Espresso (#1C0A00), dengan sudut: 15 15 15 0
+     *            ditambah label "☕ SiBarista" di atas gelembung
+     */
     private void tambahGelembungChat(String pesan, boolean isUser) {
+
         Label labelPesan = new Label(pesan);
         labelPesan.setWrapText(true);
-        labelPesan.setMaxWidth(400); // Batasi lebar gelembung agar tidak terlalu panjang
-        labelPesan.setPadding(new Insets(10, 15, 10, 15));
+        labelPesan.setMaxWidth(420);
+        labelPesan.setPadding(new Insets(12, 18, 12, 18));
 
         HBox barisChat = new HBox();
+        barisChat.setMaxWidth(Double.MAX_VALUE);
 
         if (isUser) {
-            // Styling untuk User (Kanan, Abu-abu gelap, teks putih)
-            labelPesan.setStyle("-fx-background-color: #555555; -fx-text-fill: white; -fx-background-radius: 15 15 0 15;");
+            // --- Bubble User ---
+            labelPesan.setStyle(
+                    "-fx-background-color: #1C0A00;" +
+                            "-fx-text-fill: #FBF7F0;" +
+                            "-fx-background-radius: 15 15 0 15;" +
+                            "-fx-font-size: 13px;"
+            );
             barisChat.setAlignment(Pos.CENTER_RIGHT);
+            barisChat.getChildren().add(labelPesan);
+
         } else {
-            // Styling untuk Bot (Kiri, Abu-abu terang, teks hitam)
-            labelPesan.setStyle("-fx-background-color: #E5E7EB; -fx-text-fill: black; -fx-background-radius: 15 15 15 0;");
+            // --- Label nama bot ---
+            Label labelNama = new Label("☕  SiBarista");
+            labelNama.setStyle(
+                    "-fx-text-fill: #A0522D;" +
+                            "-fx-font-size: 11px;" +
+                            "-fx-font-style: italic;"
+            );
+
+            // --- Bubble Bot ---
+            labelPesan.setStyle(
+                    "-fx-background-color: #FBF7F0;" +
+                            "-fx-text-fill: #1C0A00;" +
+                            "-fx-background-radius: 15 15 15 0;" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-border-color: #C8A882;" +
+                            "-fx-border-width: 1;" +
+                            "-fx-border-radius: 15 15 15 0;"
+            );
+
+            VBox botWrapper = new VBox(4, labelNama, labelPesan);
+            botWrapper.setAlignment(Pos.TOP_LEFT);
+
             barisChat.setAlignment(Pos.CENTER_LEFT);
+            barisChat.getChildren().add(botWrapper);
         }
 
-        barisChat.getChildren().add(labelPesan);
         chatContainer.getChildren().add(barisChat);
     }
+
+
+
 }

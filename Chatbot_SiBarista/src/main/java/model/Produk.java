@@ -73,4 +73,19 @@ public class Produk {
     public String getDetailProduk() {
         return String.format("%s (%s) - Rp%d [%s]", namaProduk, namaKategori, harga, statusStok);
     }
+
+    // Method tambahan untuk mempercantik tampilan di Tabel atau UI lainnya
+    public String getHargaFormatted() {
+        return String.format("Rp%,d", harga).replace(',', '.');
+    }
+
+    // Tambahkan toString() untuk memudahkan debugging di console
+    @Override
+    public String toString() {
+        return "Produk{" +
+                "id='" + idProduk + '\'' +
+                ", nama='" + namaProduk + '\'' +
+                ", kategori='" + namaKategori + '\'' +
+                '}';
+    }
 }
