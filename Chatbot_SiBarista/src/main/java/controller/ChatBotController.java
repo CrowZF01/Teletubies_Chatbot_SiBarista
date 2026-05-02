@@ -12,6 +12,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.Node;
+import model.Produk;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import java.io.InputStream;
 
 import java.sql.SQLException;
 
@@ -110,10 +114,28 @@ public class ChatBotController {
         chatAreaWrapper.setManaged(true);
     }
 
+//    private void prosesInput(String pesanUser) throws SQLException {
+//        tambahGelembungChat(pesanUser, true);
+//        String balasanBot = chatbotService.prosesInput(pesanUser);
+//        tambahGelembungChat(balasanBot, false);
+//    }
+
     private void prosesInput(String pesanUser) throws SQLException {
-        tambahGelembungChat(pesanUser, true);
-        String balasanBot = chatbotService.prosesInput(pesanUser);
-        tambahGelembungChat(balasanBot, false);
+        // 1. Tampilkan pesan user di chat
+        tambahGelembungChat(pesanUser, true, null);
+
+        // 2. Cek apakah input user adalah nama produk (untuk ambil gambar)
+        Produk p = chatbotService.balasanDetail(pesanUser);
+
+        if (p != null) {
+            // Jika ketemu produk, ambil teks detail dan objek produknya (untuk gambar)
+            String balasanBot = chatbotService.formatDetailProduk(p);
+            tambahGelembungChat(balasanBot, false, p);
+        } else {
+            // Jika bukan produk (misal: "Halo" atau "Menu"), ambil balasan String biasa
+            String balasanBot = chatbotService.prosesInput(pesanUser);
+            tambahGelembungChat(balasanBot, false, null);
+        }
     }
 
     /**
@@ -141,18 +163,68 @@ public class ChatBotController {
      *            teks Espresso (#1C0A00), dengan sudut: 15 15 15 0
      *            ditambah label "☕ SiBarista" di atas gelembung
      */
-    private void tambahGelembungChat(String pesan, boolean isUser) {
+//    private void tambahGelembungChat(String pesan, boolean isUser) {
+//
+//        Label labelPesan = new Label(pesan);
+//        labelPesan.setWrapText(true);
+//        labelPesan.setMaxWidth(420);
+//        labelPesan.setPadding(new Insets(12, 18, 12, 18));
+//
+//        HBox barisChat = new HBox();
+//        barisChat.setMaxWidth(Double.MAX_VALUE);
+//
+//        if (isUser) {
+//            // --- Bubble User ---
+//            labelPesan.setStyle(
+//                    "-fx-background-color: #1C0A00;" +
+//                            "-fx-text-fill: #FBF7F0;" +
+//                            "-fx-background-radius: 15 15 0 15;" +
+//                            "-fx-font-size: 13px;"
+//            );
+//            barisChat.setAlignment(Pos.CENTER_RIGHT);
+//            barisChat.getChildren().add(labelPesan);
+//
+//        } else {
+//            // --- Label nama bot ---
+//            Label labelNama = new Label("☕  SiBarista");
+//            labelNama.setStyle(
+//                    "-fx-text-fill: #A0522D;" +
+//                            "-fx-font-size: 11px;" +
+//                            "-fx-font-style: italic;"
+//            );
+//
+//            // --- Bubble Bot ---
+//            labelPesan.setStyle(
+//                    "-fx-background-color: #FBF7F0;" +
+//                            "-fx-text-fill: #1C0A00;" +
+//                            "-fx-background-radius: 15 15 15 0;" +
+//                            "-fx-font-size: 13px;" +
+//                            "-fx-border-color: #C8A882;" +
+//                            "-fx-border-width: 1;" +
+//                            "-fx-border-radius: 15 15 15 0;"
+//            );
+//
+//            VBox botWrapper = new VBox(4, labelNama, labelPesan);
+//            botWrapper.setAlignment(Pos.TOP_LEFT);
+//
+//            barisChat.setAlignment(Pos.CENTER_LEFT);
+//            barisChat.getChildren().add(botWrapper);
+//        }
+//
+//        chatContainer.getChildren().add(barisChat);
+//    }
 
-        Label labelPesan = new Label(pesan);
-        labelPesan.setWrapText(true);
-        labelPesan.setMaxWidth(420);
-        labelPesan.setPadding(new Insets(12, 18, 12, 18));
-
+    // Tambahkan parameter Produk p
+    private void tambahGelembungChat(String pesan, boolean isUser, Produk p) {
         HBox barisChat = new HBox();
         barisChat.setMaxWidth(Double.MAX_VALUE);
 
         if (isUser) {
-            // --- Bubble User ---
+            // --- Bagian User (Tetap Sama) ---
+            Label labelPesan = new Label(pesan);
+            labelPesan.setWrapText(true);
+            labelPesan.setMaxWidth(420);
+            labelPesan.setPadding(new Insets(12, 18, 12, 18));
             labelPesan.setStyle(
                     "-fx-background-color: #1C0A00;" +
                             "-fx-text-fill: #FBF7F0;" +
@@ -161,37 +233,55 @@ public class ChatBotController {
             );
             barisChat.setAlignment(Pos.CENTER_RIGHT);
             barisChat.getChildren().add(labelPesan);
-
         } else {
-            // --- Label nama bot ---
             Label labelNama = new Label("☕  SiBarista");
-            labelNama.setStyle(
-                    "-fx-text-fill: #A0522D;" +
-                            "-fx-font-size: 11px;" +
-                            "-fx-font-style: italic;"
-            );
+            labelNama.setStyle("-fx-text-fill: #A0522D; -fx-font-size: 11px; -fx-font-style: italic;");
 
-            // --- Bubble Bot ---
-            labelPesan.setStyle(
-                    "-fx-background-color: #FBF7F0;" +
-                            "-fx-text-fill: #1C0A00;" +
-                            "-fx-background-radius: 15 15 15 0;" +
-                            "-fx-font-size: 13px;" +
-                            "-fx-border-color: #C8A882;" +
-                            "-fx-border-width: 1;" +
-                            "-fx-border-radius: 15 15 15 0;"
-            );
+            VBox bubbleBox = new VBox(10);
+            bubbleBox.setPadding(new Insets(12, 18, 12, 18));
+            bubbleBox.setStyle("-fx-background-color: #FBF7F0; -fx-background-radius: 15 15 15 0; -fx-border-color: #C8A882; -fx-border-width: 1; -fx-border-radius: 15 15 15 0;");
 
-            VBox botWrapper = new VBox(4, labelNama, labelPesan);
+            // 1. TAMBAHKAN GAMBAR DULU (Agar muncul paling atas di gelembung)
+            if (p != null && p.getGambar() != null && !p.getGambar().isEmpty()) {
+                try {
+                    String path = "/images/" + p.getGambar();
+                    InputStream stream = getClass().getResourceAsStream(path);
+                    if (stream != null) {
+                        Image image = new Image(stream);
+                        ImageView imageView = new ImageView(image);
+                        imageView.setFitWidth(220);
+                        imageView.setPreserveRatio(true);
+
+                        // Menambahkan ke bubbleBox pertama kali
+                        bubbleBox.getChildren().add(imageView);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // 2. BARU TAMBAHKAN LABEL PESAN (Detail Menu)
+            Label labelPesan = new Label(pesan);
+            labelPesan.setWrapText(true);
+            labelPesan.setStyle("-fx-text-fill: #1C0A00; -fx-font-size: 13px;");
+            bubbleBox.getChildren().add(labelPesan);
+
+            // 3. Tambahkan Label Penutup (Optional)
+//            if (p != null) {
+//                Label labelFooter = new Label("Jika ingin melihat kategori lain, ketik \"Menu\".");
+//                labelFooter.setWrapText(true);
+//                labelFooter.setStyle("-fx-text-fill: #1C0A00; -fx-font-size: 11px; -fx-font-style: italic;");
+//                bubbleBox.getChildren().add(labelFooter);
+//            }
+
+            VBox botWrapper = new VBox(4, labelNama, bubbleBox);
             botWrapper.setAlignment(Pos.TOP_LEFT);
-
             barisChat.setAlignment(Pos.CENTER_LEFT);
             barisChat.getChildren().add(botWrapper);
         }
 
         chatContainer.getChildren().add(barisChat);
     }
-
 
 
 }

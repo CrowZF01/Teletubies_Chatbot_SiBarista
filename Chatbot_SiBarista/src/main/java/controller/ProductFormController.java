@@ -6,16 +6,23 @@ import javafx.stage.Stage;
 import model.Produk;
 import service.AdminService;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import java.io.File;
+import java.io.InputStream;
+
 public class ProductFormController {
     @FXML private TextField txtId, txtNama, txtHarga;
     @FXML private TextArea txtDeskripsi;
     @FXML private ComboBox<String> cbKategori;
     @FXML private Button btnStokAda, btnStokHabis;
-    @FXML private Label lblTitle;
+    @FXML private Label lblTitle, lblNamaGambar;
+    @FXML private ImageView imgPreview;
 
     private AdminService adminService = new AdminService();
     private boolean isEdit = false;
     private String currentStatusStok = "Tersedia";
+    private String namaFileGambar = null;
 
     @FXML
     public void initialize() {
@@ -40,6 +47,22 @@ public class ProductFormController {
             txtDeskripsi.setText(p.getDeskripsi());
             cbKategori.setValue(p.getNamaKategori());
             currentStatusStok = p.getStatusStok();
+
+            this.namaFileGambar = p.getGambar();
+            if (namaFileGambar != null && !namaFileGambar.isEmpty()) {
+                lblNamaGambar.setText(namaFileGambar);
+                // Load preview dari folder resources
+                try {
+                    InputStream is = getClass().getResourceAsStream("/images/" + namaFileGambar);
+                    if (is != null) {
+                        imgPreview.getImage();
+                    }
+                } catch (Exception e) {
+                    System.out.println("Gagal memuat preview: " + e.getMessage());
+                }
+            } else {
+                lblNamaGambar.setText("Tidak ada gambar");
+            }
             updateStokUI();
         } else {
             // MODE TAMBAH
@@ -47,6 +70,28 @@ public class ProductFormController {
             lblTitle.setText("Tambah Menu Baru");
             txtId.setText("AUTO"); // Indikator auto increment
             txtId.setEditable(false);
+            lblNamaGambar.setText("Belum pilih gambar");
+            imgPreview.setImage(null);
+        }
+    }
+
+    @FXML
+    private void handlePilihGambar() {
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle("Pilih Gambar Menu");
+        fileChooser.getExtensionFilters().add(
+                new javafx.stage.FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+        );
+
+        File selectedFile = fileChooser.showOpenDialog(txtId.getScene().getWindow());
+
+        if (selectedFile != null) {
+            this.namaFileGambar = selectedFile.getName();
+            lblNamaGambar.setText(namaFileGambar);
+
+            // Tampilkan preview langsung dari file yang dipilih di komputer
+            Image img = new Image(selectedFile.toURI().toString());
+            imgPreview.setImage(img);
         }
     }
 
@@ -92,7 +137,8 @@ public class ProductFormController {
                     cbKategori.getValue(),
                     txtDeskripsi.getText(),
                     Integer.parseInt(txtHarga.getText()),
-                    currentStatusStok
+                    currentStatusStok,
+                    this.namaFileGambar
             );
 
             if (adminService.simpanProduk(p, isEdit)) {

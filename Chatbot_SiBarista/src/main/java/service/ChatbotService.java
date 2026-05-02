@@ -28,7 +28,8 @@ public class ChatbotService {
                         rs.getString("nama_kategori"), // Hasil JOIN
                         rs.getString("deskripsi"),
                         rs.getInt("harga"),
-                        rs.getString("status_stok")
+                        rs.getString("status_stok"),
+                        rs.getString("gambar")
                 ));
             }
         } catch (SQLException e) {
@@ -81,15 +82,29 @@ public class ChatbotService {
         }
 
         // 5. Cari nama produk di dalam kalimat user
+//        String produkDitemukan = cariNamaProdukDalamKalimat(input);
+//        if (produkDitemukan != null) {
+//            return balasanDetail(produkDitemukan);
+//        }
+//
+//        // 6. Kalau user mengetik nama produk langsung
+//        String detail = balasanDetail(input);
+//        if (detail != null) {
+//            return detail;
+//        }
+
         String produkDitemukan = cariNamaProdukDalamKalimat(input);
         if (produkDitemukan != null) {
-            return balasanDetail(produkDitemukan);
+            Produk p = balasanDetail(produkDitemukan); // Ambil objek Produk-nya dulu
+            if (p != null) {
+                return formatDetailProduk(p); // Ubah ke String menggunakan helper method Anda
+            }
         }
 
         // 6. Kalau user mengetik nama produk langsung
-        String detail = balasanDetail(input);
-        if (detail != null) {
-            return detail;
+        Produk p = balasanDetail(input);
+        if (p != null) {
+            return formatDetailProduk(p); // Ubah ke String sebelum di-return
         }
 
         // 7. Fallback
@@ -156,7 +171,7 @@ public class ChatbotService {
     // 5. balasanDetail() [WAJIB]
     // Mengembalikan null jika tidak ditemukan
     // =========================================================
-    public String balasanDetail(String namaMenu) {
+    public Produk balasanDetail(String namaMenu) {
         String input = normalisasiInput(namaMenu);
 
         String query = """
@@ -174,15 +189,16 @@ public class ChatbotService {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                Produk p = new Produk(
+                return new Produk(
                         rs.getString("id_produk"),
                         rs.getString("nama_produk"),
                         rs.getString("nama_kategori"),
                         rs.getString("deskripsi"),
                         rs.getInt("harga"),
-                        rs.getString("status_stok")
+                        rs.getString("status_stok"),
+                        rs.getString("gambar")
                 );
-                return formatDetailProduk(p);
+//                return formatDetailProduk(p);
             }
 
         } catch (SQLException e) {
@@ -286,7 +302,7 @@ public class ChatbotService {
     // =========================================================
     // HELPER METHOD TAMBAHAN
     // =========================================================
-    private String formatDetailProduk(Produk produk) {
+    public String formatDetailProduk(Produk produk) {
         return """
                 Detail Menu:
                 ID Produk    : %s

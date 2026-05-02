@@ -25,9 +25,9 @@ public class AdminService {
     public boolean simpanProduk(Produk p, boolean isEdit) {
         String query;
         if (isEdit) {
-            query = "UPDATE produk SET nama_produk=?, id_kategori=(SELECT id_kategori FROM kategori WHERE nama_kategori=?), deskripsi=?, harga=?, status_stok=? WHERE id_produk=?";
+            query = "UPDATE produk SET nama_produk=?, id_kategori=(SELECT id_kategori FROM kategori WHERE nama_kategori=?), deskripsi=?, harga=?, status_stok=?, gambar=? WHERE id_produk=?";
         } else {
-            query = "INSERT INTO produk (nama_produk, id_kategori, deskripsi, harga, status_stok, id_produk) VALUES (?, (SELECT id_kategori FROM kategori WHERE nama_kategori=?), ?, ?, ?, ?)";
+            query = "INSERT INTO produk (nama_produk, id_kategori, deskripsi, harga, status_stok, gambar) VALUES (?, (SELECT id_kategori FROM kategori WHERE nama_kategori=?), ?, ?, ?, ?)";
         }
 
         try (Connection conn = Database.getConnection();
@@ -38,7 +38,11 @@ public class AdminService {
             pstmt.setString(3, p.getDeskripsi());
             pstmt.setInt(4, p.getHarga());
             pstmt.setString(5, p.getStatusStok());
-            pstmt.setString(6, p.getIdProduk());
+            pstmt.setString(6, p.getGambar());
+
+            if (isEdit){
+                pstmt.setString(7, p.getIdProduk());
+            }
 
             int result = pstmt.executeUpdate();
             return result > 0;
