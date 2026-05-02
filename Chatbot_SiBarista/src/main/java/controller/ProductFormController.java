@@ -1,5 +1,10 @@
 package controller;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -23,6 +28,7 @@ public class ProductFormController {
     private boolean isEdit = false;
     private String currentStatusStok = "Tersedia";
     private String namaFileGambar = null;
+    private File selectedImageFile = null;
 
     @FXML
     public void initialize() {
@@ -55,13 +61,16 @@ public class ProductFormController {
                 try {
                     InputStream is = getClass().getResourceAsStream("/images/" + namaFileGambar);
                     if (is != null) {
-                        imgPreview.getImage();
+                        imgPreview.setImage(new Image(is));
+                    } else {
+                        imgPreview.setImage(null);
                     }
                 } catch (Exception e) {
                     System.out.println("Gagal memuat preview: " + e.getMessage());
                 }
             } else {
                 lblNamaGambar.setText("Tidak ada gambar");
+                imgPreview.setImage(null);
             }
             updateStokUI();
         } else {
@@ -75,6 +84,36 @@ public class ProductFormController {
         }
     }
 
+    private void copyGambarKeFolderImages() throws Exception {
+        if (selectedImageFile == null || namaFileGambar == null) {
+            return;
+        }
+
+        // Folder resources saat development
+        Path resourcesImagesPath = Paths.get("Chatbot_SiBarista","src", "main", "resources", "images");
+        // Folder target/classes agar bisa langsung dibaca getResourceAsStream saat aplikasi sedang jalan
+        Path targetImagesPath = Paths.get("Chatbot_SiBarista","target", "classes", "images");
+
+        Files.createDirectories(resourcesImagesPath);
+        Files.createDirectories(targetImagesPath);
+
+        Path tujuanResources = resourcesImagesPath.resolve(namaFileGambar);
+        Path tujuanTarget = targetImagesPath.resolve(namaFileGambar);
+
+        Files.copy(
+                selectedImageFile.toPath(),
+                tujuanResources,
+                StandardCopyOption.REPLACE_EXISTING
+        );
+
+        Files.copy(
+                selectedImageFile.toPath(),
+                tujuanTarget,
+                StandardCopyOption.REPLACE_EXISTING
+        );
+
+    }
+
     @FXML
     private void handlePilihGambar() {
         javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
@@ -86,15 +125,17 @@ public class ProductFormController {
         File selectedFile = fileChooser.showOpenDialog(txtId.getScene().getWindow());
 
         if (selectedFile != null) {
-            this.namaFileGambar = selectedFile.getName();
+            this.selectedImageFile = selectedFile;
+            this.namaFileGambar = System.currentTimeMillis() + "_" + selectedFile.getName()
+                    .replaceAll("[^a-zA-Z0-9._-]", "_");
             lblNamaGambar.setText(namaFileGambar);
+
 
             // Tampilkan preview langsung dari file yang dipilih di komputer
             Image img = new Image(selectedFile.toURI().toString());
             imgPreview.setImage(img);
         }
     }
-
 
     @FXML
     private void handleStokTersedia() {
@@ -122,15 +163,14 @@ public class ProductFormController {
     private void handleSave() {
         try {
             // Validasi input (Nama dan Harga tidak boleh kosong)
-            if (txtNama.getText().isEmpty() || txtHarga.getText().isEmpty()) {
+            if (txtNama.getText().trim().isEmpty() || txtHarga.getText().trim().isEmpty()) {
                 new Alert(Alert.AlertType.ERROR, "Nama dan Harga wajib diisi!").show();
                 return;
             }
-
+            copyGambarKeFolderImages();
             // Jika Tambah Baru, kirim ID sebagai null atau string kosong
             // agar Database (Auto Increment) yang menghandle
             String idToSave = isEdit ? txtId.getText() : null;
-
             Produk p = new Produk(
                     idToSave,
                     txtNama.getText(),

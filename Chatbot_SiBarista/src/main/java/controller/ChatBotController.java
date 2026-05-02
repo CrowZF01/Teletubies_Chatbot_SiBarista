@@ -1,4 +1,7 @@
 package controller;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import service.ChatbotService;
 import javafx.event.ActionEvent;
@@ -214,6 +217,25 @@ public class ChatBotController {
 //        chatContainer.getChildren().add(barisChat);
 //    }
 
+    private Image loadGambarProduk(String namaFileGambar) {
+        if (namaFileGambar == null || namaFileGambar.isEmpty()) {
+            return null;
+        }
+        try {
+            Path resourcesPath = Paths.get(
+                    "Chatbot_SiBarista", "src", "main", "resources", "images", namaFileGambar
+            );
+            if (Files.exists(resourcesPath)) {
+                return new Image(resourcesPath.toUri().toString());
+            }
+            System.out.println("Gambar tidak ditemukan: " + namaFileGambar);
+            return null;
+        } catch (Exception e) {
+            System.out.println("Gagal load gambar: " + e.getMessage());
+            return null;
+        }
+    }
+
     // Tambahkan parameter Produk p
     private void tambahGelembungChat(String pesan, boolean isUser, Produk p) {
         HBox barisChat = new HBox();
@@ -244,15 +266,12 @@ public class ChatBotController {
             // 1. TAMBAHKAN GAMBAR DULU (Agar muncul paling atas di gelembung)
             if (p != null && p.getGambar() != null && !p.getGambar().isEmpty()) {
                 try {
-                    String path = "/images/" + p.getGambar();
-                    InputStream stream = getClass().getResourceAsStream(path);
-                    if (stream != null) {
-                        Image image = new Image(stream);
+                    Image image = loadGambarProduk(p.getGambar());
+
+                    if (image != null) {
                         ImageView imageView = new ImageView(image);
                         imageView.setFitWidth(220);
                         imageView.setPreserveRatio(true);
-
-                        // Menambahkan ke bubbleBox pertama kali
                         bubbleBox.getChildren().add(imageView);
                     }
                 } catch (Exception e) {
