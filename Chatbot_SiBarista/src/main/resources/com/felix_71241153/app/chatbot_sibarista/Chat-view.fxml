@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <!--
     SiBarista - Coffee Shop Chatbot UI
@@ -26,8 +19,7 @@
         #FFFFFF  = Pure Foam (gelembung user bg)
 -->
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #F0E6D3;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ChatBotController">
-
+<BorderPane fx:id="mainContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #F0E6D3;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ChatBotController">
     <!-- ===== SIDEBAR KIRI ===== -->
     <left>
         <VBox prefHeight="700.0" prefWidth="230.0" spacing="0" style="-fx-background-color: #1C0A00;" BorderPane.alignment="CENTER">
@@ -67,7 +59,7 @@
                 <children>
 
                     <!-- Chat / Home (aktif) -->
-                    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-background-color: #6B3A2A; -fx-background-radius: 8;">
+                    <HBox fx:id="menuChat" alignment="CENTER_LEFT" onMouseClicked="#handleShowChat" spacing="12" style="-fx-background-color: #6B3A2A; -fx-background-radius: 8; -fx-cursor: hand;">
                         <children>
                             <Label style="-fx-text-fill: #FBF7F0;" text="💬">
                                 <font><Font size="14.0" /></font>
@@ -81,19 +73,10 @@
                     </HBox>
 
                     <!-- ===== KERANJANG (menggantikan About) ===== -->
-                    <Button fx:id="cartButton"
-                            mnemonicParsing="false"
-                            onAction="#handleCart"
-                            maxWidth="1.7976931348623157E308"
-                            style="-fx-background-color: transparent;
-                                   -fx-background-radius: 8;
-                                   -fx-cursor: hand;
-                                   -fx-alignment: CENTER_LEFT;
-                                   -fx-padding: 0;">
+                    <Button fx:id="cartButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleCart" style="-fx-background-color: transparent;                                    -fx-background-radius: 8;                                    -fx-cursor: hand;                                    -fx-alignment: CENTER_LEFT;                                    -fx-padding: 0;">
                         <VBox.margin><Insets left="10" right="10" /></VBox.margin>
                         <graphic>
-                            <HBox alignment="CENTER_LEFT" spacing="12"
-                                  style="-fx-background-color: transparent; -fx-background-radius: 8;">
+                            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-background-color: transparent; -fx-background-radius: 8;">
                                 <children>
                                     <Label fx:id="cartIconLabel" style="-fx-text-fill: #C8A882;" text="🛒">
                                         <font><Font size="14.0" /></font>
@@ -134,8 +117,7 @@
 
     <!-- ===== AREA UTAMA ===== -->
     <center>
-        <VBox prefHeight="700.0" prefWidth="870.0" spacing="0" style="-fx-background-color: #F0E6D3;" BorderPane.alignment="CENTER">
-
+        <VBox fx:id="centerChatArea" prefHeight="700.0" prefWidth="870.0" spacing="0" style="-fx-background-color: #F0E6D3;" BorderPane.alignment="CENTER">
             <!-- Topbar -->
             <HBox alignment="CENTER_RIGHT" prefHeight="56" style="-fx-background-color: #FBF7F0; -fx-border-color: #C8A882; -fx-border-width: 0 0 1 0;">
                 <children>
@@ -178,9 +160,6 @@
                                 <padding><Insets bottom="8" left="16" right="16" top="8" /></padding>
                             </Button>
                             <Button mnemonicParsing="false" onAction="#handleRekomendasi" style="-fx-background-color: #FBF7F0; -fx-text-fill: #6B3A2A; -fx-border-color: #C8A882; -fx-border-width: 1; -fx-border-radius: 20; -fx-background-radius: 20; -fx-font-size: 12px; -fx-cursor: hand;" text="🌟 Rekomendasi">
-                                <padding><Insets bottom="8" left="16" right="16" top="8" /></padding>
-                            </Button>
-                            <Button mnemonicParsing="false" style="-fx-background-color: #FBF7F0; -fx-text-fill: #6B3A2A; -fx-border-color: #C8A882; -fx-border-width: 1; -fx-border-radius: 20; -fx-background-radius: 20; -fx-font-size: 12px; -fx-cursor: hand;" text="💰 Harga">
                                 <padding><Insets bottom="8" left="16" right="16" top="8" /></padding>
                             </Button>
                         </children>

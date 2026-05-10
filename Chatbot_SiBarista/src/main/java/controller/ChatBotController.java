@@ -39,6 +39,9 @@ public class ChatBotController {
     @FXML private VBox chatContainer;
     @FXML private TextField chatInputField;
 
+    @FXML private javafx.scene.layout.BorderPane mainContainer;
+    @FXML private javafx.scene.layout.VBox centerChatArea;
+    @FXML private javafx.scene.layout.HBox menuChat;
     // ===== PALETTE COFFEE =====
     // Espresso Black  : #1C0A00
     // Dark Roast      : #3D1A00
@@ -70,24 +73,24 @@ public class ChatBotController {
      * Buka halaman keranjang (keranjang-view.fxml).
      * Dipanggil oleh onAction="#handleKeranjang" pada cartButton di FXML.
      */
-    @FXML
-    private void handleCart(ActionEvent event) {
-        try {
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
-                    getClass().getResource(
-                            "/com/felix_71241153/app/chatbot_sibarista/keranjang-view.fxml")
-            );
-            javafx.scene.Parent root = loader.load();
-
-            javafx.stage.Stage stage = (javafx.stage.Stage) cartButton.getScene().getWindow();
-            javafx.scene.Scene scene = new javafx.scene.Scene(root, stage.getWidth(), stage.getHeight());
-            stage.setScene(scene);
-            stage.setTitle("SiBarista – Keranjang");
-
-        } catch (java.io.IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    @FXML
+//    private void handleCart(ActionEvent event) {
+//        try {
+//            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+//                    getClass().getResource(
+//                            "/com/felix_71241153/app/chatbot_sibarista/keranjang-view.fxml")
+//            );
+//            javafx.scene.Parent root = loader.load();
+//
+//            javafx.stage.Stage stage = (javafx.stage.Stage) cartButton.getScene().getWindow();
+//            javafx.scene.Scene scene = new javafx.scene.Scene(root, stage.getWidth(), stage.getHeight());
+//            stage.setScene(scene);
+//            stage.setTitle("SiBarista – Keranjang");
+//
+//        } catch (java.io.IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     /**
      * Perbarui teks tombol keranjang di sidebar agar menampilkan
@@ -312,5 +315,42 @@ public class ChatBotController {
         }
 
         chatContainer.getChildren().add(barisChat);
+    }
+
+    @FXML
+    private void handleCart(ActionEvent event) {
+        try {
+            // Load FXML Keranjang
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/com/felix_71241153/app/chatbot_sibarista/keranjang-view.fxml")
+            );
+            javafx.scene.Node cartView = loader.load();
+
+            // Ganti isi tengah BorderPane dengan tampilan Keranjang
+            mainContainer.setCenter(cartView);
+
+            // Styling menu sidebar (Keranjang aktif, Chat pasif)
+            cartButton.setStyle("-fx-background-color: #6B3A2A; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT; -fx-padding: 0;");
+            menuChat.setStyle("-fx-background-color: transparent; -fx-background-radius: 8; -fx-cursor: hand;");
+
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Kembali ke halaman Chat / Home.
+     */
+    @FXML
+    private void handleShowChat(javafx.scene.input.MouseEvent event) {
+        // Kembalikan isi tengah BorderPane ke tampilan Chat awal
+        mainContainer.setCenter(centerChatArea);
+
+        // Styling menu sidebar (Chat aktif, Keranjang pasif)
+        menuChat.setStyle("-fx-background-color: #6B3A2A; -fx-background-radius: 8; -fx-cursor: hand;");
+        cartButton.setStyle("-fx-background-color: transparent; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT; -fx-padding: 0;");
+
+        // Refresh badge keranjang untuk berjaga-jaga
+        refreshKeranjangBadge();
     }
 }

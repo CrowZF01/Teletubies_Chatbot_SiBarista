@@ -26,18 +26,6 @@
                   style="-fx-background-color: #1C0A00;">
                 <padding><Insets top="14" right="20" bottom="14" left="16"/></padding>
 
-                <!-- Tombol Kembali -->
-                <Button fx:id="backButton" onAction="#handleBack" text="← Kembali"
-                        style="-fx-background-color: transparent;
-                               -fx-text-fill: #C8A882;
-                               -fx-font-size: 13px;
-                               -fx-cursor: hand;
-                               -fx-border-color: #C8A882;
-                               -fx-border-radius: 6;
-                               -fx-border-width: 1;
-                               -fx-background-radius: 6;
-                               -fx-padding: 6 14 6 14;"/>
-
                 <!-- Spacer -->
                 <Region HBox.hgrow="ALWAYS"/>
 
@@ -90,7 +78,7 @@
         <HBox spacing="0">
 
             <!-- ── Panel Kiri : Daftar Menu ── -->
-            <VBox prefWidth="300" VBox.vgrow="ALWAYS"
+            <VBox prefWidth="550" VBox.vgrow="ALWAYS"
                   style="-fx-background-color: #F0E6D3;">
 
                 <!-- Sub-header -->
@@ -117,7 +105,7 @@
                        style="-fx-background-color: #C8A882;"/>
 
             <!-- ── Panel Kanan : Keranjang ── -->
-            <VBox prefWidth="220" VBox.vgrow="ALWAYS"
+            <VBox prefWidth="320" VBox.vgrow="ALWAYS"
                   style="-fx-background-color: #FBF7F0;">
 
                 <!-- Sub-header -->

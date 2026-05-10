@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #F0E6D3; -fx-background-radius: 8; -fx-border-color: #C8A882; -fx-border-width: 1; -fx-border-radius: 8;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+    <padding>
+        <Insets bottom="8.0" left="12.0" right="12.0" top="8.0" />
+    </padding>
+    <VBox alignment="CENTER_LEFT" spacing="2.0" HBox.hgrow="ALWAYS">
+        <Label fx:id="lblNama" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1C0A00;" wrapText="true" />
+        <Label fx:id="lblSubtotal" style="-fx-font-size: 12px; -fx-text-fill: #3D1A00;" />
+    </VBox>
+    <HBox alignment="CENTER" spacing="6.0">
+        <Button fx:id="btnKurang" mnemonicParsing="false" style="-fx-background-color: #1C0A00; -fx-text-fill: #FBF7F0; -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 50%; -fx-min-width: 28px; -fx-min-height: 28px; -fx-max-width: 28px; -fx-max-height: 28px; -fx-padding: 0;" text="−" />
+        <Label fx:id="lblJumlah" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1C0A00; -fx-min-width: 24; -fx-alignment: center;" text="1" />
+        <Button fx:id="btnTambah" mnemonicParsing="false" style="-fx-background-color: #1C0A00; -fx-text-fill: #FBF7F0; -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 50%; -fx-min-width: 28px; -fx-min-height: 28px; -fx-max-width: 28px; -fx-max-height: 28px; -fx-padding: 0;" text="+" />
+    </HBox>
+</HBox>
