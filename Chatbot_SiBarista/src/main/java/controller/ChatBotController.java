@@ -22,6 +22,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class ChatBotController {
 
@@ -175,13 +176,22 @@ public class ChatBotController {
     }
 
     private void prosesInput(String pesanUser) throws SQLException {
+        // 1. Tampilkan pesan user di chat
         tambahGelembungChat(pesanUser, true, null);
 
-        Produk p = chatbotService.balasanDetail(pesanUser);
-        if (p != null) {
-            tambahGelembungChat(chatbotService.formatDetailProduk(p), false, p);
+        // 2. Cari apakah ada banyak produk yang disebut dalam kalimat
+        List<Produk> listProduk = chatbotService.cariSemuaProdukDalamKalimat(pesanUser);
+
+        if (!listProduk.isEmpty()) {
+            // Jika ketemu 1 atau lebih produk, tampilkan gelembungnya satu per satu!
+            for (Produk p : listProduk) {
+                String balasanBot = chatbotService.formatDetailProduk(p);
+                tambahGelembungChat(balasanBot, false, p);
+            }
         } else {
-            tambahGelembungChat(chatbotService.prosesInput(pesanUser), false, null);
+            // Jika bukan produk (misal: "Halo", "Menu", atau tidak dikenali)
+            String balasanBot = chatbotService.prosesInput(pesanUser);
+            tambahGelembungChat(balasanBot, false, null);
         }
     }
 

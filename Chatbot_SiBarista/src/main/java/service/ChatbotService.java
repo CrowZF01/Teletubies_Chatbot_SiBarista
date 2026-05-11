@@ -201,6 +201,27 @@ public class ChatbotService {
         return null;
     }
 
+    // =========================================================
+    // METHOD BARU: Mencari produk dari exact match atau dalam kalimat
+    // =========================================================
+    public Produk cariProdukDariInput(String pesan) {
+        String input = normalisasiInput(pesan);
+
+        // 1. Coba cari pencocokan sama persis (Exact Match) dulu
+        Produk p = balasanDetail(input);
+        if (p != null) {
+            return p;
+        }
+
+        // 2. Kalau tidak ketemu persis, cari apakah ada nama menu di dalam kalimat
+        String namaDalamKalimat = cariNamaProdukDalamKalimat(input);
+        if (namaDalamKalimat != null) {
+            return balasanDetail(namaDalamKalimat);
+        }
+
+        // 3. Kalau benar-benar tidak ada, kembalikan null
+        return null;
+    }
 
     public String cariNamaProdukDalamKalimat(String input){
         String query = "SELECT nama_produk FROM produk";
@@ -343,5 +364,37 @@ public class ChatbotService {
         }
         hasil.append("Ketik nama produk diatas untuk melihat detailnya");
         return hasil.toString();
+    }
+
+    // =========================================================
+    // METHOD BARU: Mencari BANYAK produk sekaligus dalam kalimat
+    // =========================================================
+    public List<Produk> cariSemuaProdukDalamKalimat(String pesan) {
+        List<Produk> produkDitemukan = new ArrayList<>();
+        String input = normalisasiInput(pesan);
+
+        // Ambil semua nama produk dari database untuk dicek satu per satu
+        String query = "SELECT nama_produk FROM produk";
+
+        try (Connection conn = Database.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                String namaProduk = rs.getString("nama_produk").toLowerCase();
+
+                // Jika kalimat user mengandung nama produk ini, tambahkan ke List
+                if (input.contains(namaProduk)) {
+                    Produk p = balasanDetail(namaProduk);
+                    if (p != null) {
+                        produkDitemukan.add(p);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return produkDitemukan;
     }
 }
