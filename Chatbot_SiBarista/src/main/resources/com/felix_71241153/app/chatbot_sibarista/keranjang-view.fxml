@@ -1,72 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.Priority?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<BorderPane
-        xmlns:fx="http://javafx.com/fxml/1"
-        fx:controller="controller.KeranjangController"
-        style="-fx-background-color: #F0E6D3;"
-        prefWidth="520" prefHeight="700">
+<BorderPane prefHeight="700" prefWidth="520" style="-fx-background-color: #F0E6D3;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.KeranjangController">
 
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <!--  TOP : Header                                                       -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <top>
         <VBox style="-fx-background-color: #1C0A00;">
-            <HBox alignment="CENTER_LEFT" spacing="12"
-                  style="-fx-background-color: #1C0A00;">
-                <padding><Insets top="14" right="20" bottom="14" left="16"/></padding>
+            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-background-color: #1C0A00;">
+                <padding><Insets bottom="14" left="16" right="20" top="14" /></padding>
 
                 <!-- Spacer -->
-                <Region HBox.hgrow="ALWAYS"/>
+                <Region HBox.hgrow="ALWAYS" />
 
                 <!-- Judul -->
-                <Label text="🛒  Keranjang"
-                       style="-fx-text-fill: #FBF7F0;
-                              -fx-font-size: 20px;
-                              -fx-font-weight: bold;"/>
+                <Label style="-fx-text-fill: #FBF7F0;                               -fx-font-size: 20px;                               -fx-font-weight: bold;" text="🛒  Keranjang" />
 
                 <!-- Spacer -->
-                <Region HBox.hgrow="ALWAYS"/>
+                <Region HBox.hgrow="ALWAYS" />
             </HBox>
 
             <!-- ── Filter Kategori ── -->
-            <HBox spacing="8" alignment="CENTER_LEFT"
-                  style="-fx-background-color: #3D1A00;">
-                <padding><Insets top="10" right="16" bottom="10" left="16"/></padding>
+            <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-background-color: #3D1A00;">
+                <padding><Insets bottom="10" left="16" right="16" top="10" /></padding>
 
-                <Button text="☕ Semua"    onAction="#handleFilterSemua"
-                        style="-fx-background-color: #C8A882; -fx-text-fill: #1C0A00;
-                               -fx-font-size: 12px; -fx-cursor: hand;
-                               -fx-background-radius: 20; -fx-padding: 5 14 5 14;
-                               -fx-font-weight: bold;"/>
-                <Button text="Kopi"       onAction="#handleFilterKopi"
-                        style="-fx-background-color: transparent; -fx-text-fill: #C8A882;
-                               -fx-font-size: 12px; -fx-cursor: hand;
-                               -fx-border-color: #C8A882; -fx-border-radius: 20;
-                               -fx-border-width: 1; -fx-background-radius: 20;
-                               -fx-padding: 5 14 5 14;"/>
-                <Button text="Non-Kopi"   onAction="#handleFilterNonKopi"
-                        style="-fx-background-color: transparent; -fx-text-fill: #C8A882;
-                               -fx-font-size: 12px; -fx-cursor: hand;
-                               -fx-border-color: #C8A882; -fx-border-radius: 20;
-                               -fx-border-width: 1; -fx-background-radius: 20;
-                               -fx-padding: 5 14 5 14;"/>
-                <Button text="Snack"    onAction="#handleFilterMakanan"
-                        style="-fx-background-color: transparent; -fx-text-fill: #C8A882;
-                               -fx-font-size: 12px; -fx-cursor: hand;
-                               -fx-border-color: #C8A882; -fx-border-radius: 20;
-                               -fx-border-width: 1; -fx-background-radius: 20;
-                               -fx-padding: 5 14 5 14;"/>
+                <Button fx:id="btnFilterSemua" onAction="#handleFilterSemua" style="-fx-background-color: #C8A882; -fx-text-fill: #1C0A00;                    -fx-font-size: 12px; -fx-cursor: hand;                    -fx-background-radius: 20; -fx-padding: 5 14 5 14;                    -fx-font-weight: bold;" text="☕ Semua" />
+                <Button fx:id="btnFilterKopi" onAction="#handleFilterKopi" style="-fx-background-color: transparent; -fx-text-fill: #C8A882;                    -fx-font-size: 12px; -fx-cursor: hand;                    -fx-border-color: #C8A882; -fx-border-radius: 20;                    -fx-border-width: 1; -fx-background-radius: 20;                    -fx-padding: 5 14 5 14;" text="Kopi" />
+                <Button fx:id="btnFilterNonKopi" onAction="#handleFilterNonKopi" style="-fx-background-color: transparent; -fx-text-fill: #C8A882;                    -fx-font-size: 12px; -fx-cursor: hand;                    -fx-border-color: #C8A882; -fx-border-radius: 20;                    -fx-border-width: 1; -fx-background-radius: 20;                    -fx-padding: 5 14 5 14;" text="Non-Kopi" />
+                <Button fx:id="btnFilterMakanan" onAction="#handleFilterMakanan" style="-fx-background-color: transparent; -fx-text-fill: #C8A882;                    -fx-font-size: 12px; -fx-cursor: hand;                    -fx-border-color: #C8A882; -fx-border-radius: 20;                    -fx-border-width: 1; -fx-background-radius: 20;                    -fx-padding: 5 14 5 14;" text="Snack" />
             </HBox>
         </VBox>
     </top>
@@ -78,51 +43,38 @@
         <HBox spacing="0">
 
             <!-- ── Panel Kiri : Daftar Menu ── -->
-            <VBox prefWidth="550" VBox.vgrow="ALWAYS"
-                  style="-fx-background-color: #F0E6D3;">
+            <VBox prefWidth="550" style="-fx-background-color: #F0E6D3;" VBox.vgrow="ALWAYS">
 
                 <!-- Sub-header -->
                 <HBox alignment="CENTER_LEFT">
-                    <padding><Insets top="14" right="12" bottom="6" left="16"/></padding>
-                    <Label fx:id="sectionTitle" text="Semua Menu"
-                           style="-fx-font-size: 15px; -fx-font-weight: bold;
-                                  -fx-text-fill: #3D1A00;"/>
+                    <padding><Insets bottom="6" left="16" right="12" top="14" /></padding>
+                    <Label fx:id="sectionTitle" style="-fx-font-size: 15px; -fx-font-weight: bold;                                   -fx-text-fill: #3D1A00;" text="Semua Menu" />
                 </HBox>
 
                 <!-- Daftar produk dari DB -->
-                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                            style="-fx-background-color: transparent;
-                                   -fx-background: transparent;
-                                   -fx-border-color: transparent;">
+                <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;                                    -fx-background: transparent;                                    -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
                     <VBox fx:id="menuListContainer" spacing="0">
-                        <padding><Insets top="4" right="12" bottom="12" left="12"/></padding>
+                        <padding><Insets bottom="12" left="12" right="12" top="4" /></padding>
                     </VBox>
                 </ScrollPane>
             </VBox>
 
             <!-- ── Divider vertikal ── -->
-            <Separator orientation="VERTICAL"
-                       style="-fx-background-color: #C8A882;"/>
+            <Separator orientation="VERTICAL" style="-fx-background-color: #C8A882;" />
 
             <!-- ── Panel Kanan : Keranjang ── -->
-            <VBox prefWidth="320" VBox.vgrow="ALWAYS"
-                  style="-fx-background-color: #FBF7F0;">
+            <VBox prefWidth="320" style="-fx-background-color: #FBF7F0;" VBox.vgrow="ALWAYS">
 
                 <!-- Sub-header -->
                 <HBox alignment="CENTER_LEFT">
-                    <padding><Insets top="14" right="12" bottom="6" left="16"/></padding>
-                    <Label text="🛒  Pesanan Saya"
-                           style="-fx-font-size: 15px; -fx-font-weight: bold;
-                                  -fx-text-fill: #3D1A00;"/>
+                    <padding><Insets bottom="6" left="16" right="12" top="14" /></padding>
+                    <Label style="-fx-font-size: 15px; -fx-font-weight: bold;                                   -fx-text-fill: #3D1A00;" text="🛒  Pesanan Saya" />
                 </HBox>
 
                 <!-- Item keranjang -->
-                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                            style="-fx-background-color: transparent;
-                                   -fx-background: transparent;
-                                   -fx-border-color: transparent;">
+                <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;                                    -fx-background: transparent;                                    -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
                     <VBox fx:id="cartItemContainer" spacing="0">
-                        <padding><Insets top="4" right="10" bottom="12" left="10"/></padding>
+                        <padding><Insets bottom="12" left="10" right="10" top="4" /></padding>
                     </VBox>
                 </ScrollPane>
             </VBox>
@@ -135,35 +87,21 @@
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <bottom>
         <VBox style="-fx-background-color: #1C0A00;">
-            <Separator style="-fx-background-color: #C8A882;"/>
+            <Separator style="-fx-background-color: #C8A882;" />
 
             <HBox alignment="CENTER_LEFT" spacing="12">
-                <padding><Insets top="14" right="20" bottom="14" left="20"/></padding>
+                <padding><Insets bottom="14" left="20" right="20" top="14" /></padding>
 
                 <VBox spacing="2">
-                    <Label text="Total Harga"
-                           style="-fx-text-fill: #C8A882;
-                                  -fx-font-size: 11px;
-                                  -fx-font-style: italic;"/>
-                    <Label fx:id="totalLabel" text="Rp 0"
-                           style="-fx-text-fill: #FBF7F0;
-                                  -fx-font-size: 18px;
-                                  -fx-font-weight: bold;"/>
+                    <Label style="-fx-text-fill: #C8A882;                                   -fx-font-size: 11px;                                   -fx-font-style: italic;" text="Total Harga" />
+                    <Label fx:id="totalLabel" style="-fx-text-fill: #FBF7F0;                                   -fx-font-size: 18px;                                   -fx-font-weight: bold;" text="Rp 0" />
                 </VBox>
 
                 <!-- Spacer -->
-                <Region HBox.hgrow="ALWAYS"/>
+                <Region HBox.hgrow="ALWAYS" />
 
                 <!-- Tombol Checkout -->
-                <Button text="Checkout  →"
-                        onAction="#handleCheckout"
-                        style="-fx-background-color: #C8A882;
-                               -fx-text-fill: #1C0A00;
-                               -fx-font-size: 14px;
-                               -fx-font-weight: bold;
-                               -fx-cursor: hand;
-                               -fx-background-radius: 8;
-                               -fx-padding: 10 24 10 24;"/>
+                <Button onAction="#handleCheckout" style="-fx-background-color: #C8A882;                                -fx-text-fill: #1C0A00;                                -fx-font-size: 14px;                                -fx-font-weight: bold;                                -fx-cursor: hand;                                -fx-background-radius: 8;                                -fx-padding: 10 24 10 24;" text="Cek Harga →" />
             </HBox>
         </VBox>
     </bottom>

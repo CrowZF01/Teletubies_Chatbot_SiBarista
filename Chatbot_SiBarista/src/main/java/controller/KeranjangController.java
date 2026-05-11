@@ -28,6 +28,10 @@ public class KeranjangController {
     @FXML private VBox cartItemContainer;
     @FXML private Label totalLabel;
     @FXML private Label sectionTitle;
+    @FXML private Button btnFilterSemua;
+    @FXML private Button btnFilterKopi;
+    @FXML private Button btnFilterNonKopi;
+    @FXML private Button btnFilterMakanan;
 
     private final KeranjangService keranjangService = KeranjangService.getInstance();
     private final Produk produkModel = new Produk();
@@ -47,18 +51,44 @@ public class KeranjangController {
             e.printStackTrace();
         }
     }
+    private void setTombolAktif(Button tombolAktif) {
+        String stylePasif = "-fx-background-color: transparent; -fx-text-fill: #C8A882; -fx-font-size: 12px; -fx-cursor: hand; -fx-border-color: #C8A882; -fx-border-radius: 20; -fx-border-width: 1; -fx-background-radius: 20; -fx-padding: 5 14 5 14;";
+        String styleAktif = "-fx-background-color: #C8A882; -fx-text-fill: #1C0A00; -fx-font-size: 12px; -fx-cursor: hand; -fx-background-radius: 20; -fx-padding: 5 14 5 14; -fx-font-weight: bold;";
+
+        // 1. Kembalikan semua tombol ke mode garis pinggir (Pasif)
+        btnFilterSemua.setStyle(stylePasif);
+        btnFilterKopi.setStyle(stylePasif);
+        btnFilterNonKopi.setStyle(stylePasif);
+        btnFilterMakanan.setStyle(stylePasif);
+
+        // 2. Beri warna pekat pada tombol yang dipilih (Aktif)
+        tombolAktif.setStyle(styleAktif);
+    }
+
 
     @FXML
-    private void handleFilterSemua(ActionEvent event) { muatSemuaMenu(); }
+    private void handleFilterSemua(ActionEvent event) {
+        muatSemuaMenu();
+        setTombolAktif(btnFilterSemua);
+    }
 
     @FXML
-    private void handleFilterKopi(ActionEvent event) { muatMenuByKategori(1, "Kopi"); }
+    private void handleFilterKopi(ActionEvent event) {
+        muatMenuByKategori(1, "Kopi");
+        setTombolAktif(btnFilterKopi);
+    }
 
     @FXML
-    private void handleFilterNonKopi(ActionEvent event) { muatMenuByKategori(2, "Non-Kopi"); }
+    private void handleFilterNonKopi(ActionEvent event) {
+        muatMenuByKategori(2, "Non-Kopi");
+        setTombolAktif(btnFilterNonKopi);
+    }
 
     @FXML
-    private void handleFilterMakanan(ActionEvent event) { muatMenuByKategori(3, "Snack"); }
+    private void handleFilterMakanan(ActionEvent event) {
+        muatMenuByKategori(3, "Snack");
+        setTombolAktif(btnFilterMakanan);
+    }
 
     private void muatMenuByKategori(int idKategori, String judul) {
         if (sectionTitle != null) sectionTitle.setText(judul);
@@ -162,8 +192,8 @@ public class KeranjangController {
     private void handleCheckout(ActionEvent event) {
         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
         alert.setTitle("Checkout");
-        alert.setHeaderText("Pesanan Diterima ☕");
-        alert.setContentText("Total pembayaran: " + formatRupiah(keranjangService.getTotalHarga()) + "\n\nTerima kasih telah memesan di SiBarista!");
+        alert.setHeaderText("Total Hitung Harga☕");
+        alert.setContentText("Total Harga: " + formatRupiah(keranjangService.getTotalHarga()));
         alert.showAndWait();
         keranjangService.kosongkanKeranjang();
         refreshKeranjang();
