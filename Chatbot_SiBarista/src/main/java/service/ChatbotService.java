@@ -52,7 +52,8 @@ public class ChatbotService {
         // 1. Sapaan
         if (input.equals("halo") || input.equals("hai") || input.equals("hi")
                 || input.equals("selamat pagi") || input.equals("selamat siang")
-                || input.equals("selamat sore") || input.equals("selamat malam")) {
+                || input.equals("selamat sore") || input.equals("selamat malam") ||
+                    input.equals("apa kabar")) {
             return balasanSapaan();
         }
 
@@ -64,15 +65,16 @@ public class ChatbotService {
         }
 
         // 3. Kategori spesifik dulu (lebih spesifik daripada "menu")
-        if (input.contains("non-coffee") || input.contains("non coffee")) {
+        if (input.contains("non-coffee") || input.contains("non coffee") || input.contains("non cofee")
+        || input.contains("non coffe") || input.contains("non cofe")) {
             return balasanKategori("Non-Coffee");
         }
 
-        if (input.contains("coffee")) {
+        if (input.contains("coffee") || input.contains("coffe") || input.contains("cofee") || input.contains("cofe")) {
             return balasanKategori("Coffee");
         }
 
-        if (input.contains("snack")) {
+        if (input.contains("snack") || input.contains("snacks") || input.contains("snak") || input.contains("snac")) {
             return balasanKategori("Snacks");
         }
 
@@ -198,28 +200,6 @@ public class ChatbotService {
             e.printStackTrace();
         }
 
-        return null;
-    }
-
-    // =========================================================
-    // METHOD BARU: Mencari produk dari exact match atau dalam kalimat
-    // =========================================================
-    public Produk cariProdukDariInput(String pesan) {
-        String input = normalisasiInput(pesan);
-
-        // 1. Coba cari pencocokan sama persis (Exact Match) dulu
-        Produk p = balasanDetail(input);
-        if (p != null) {
-            return p;
-        }
-
-        // 2. Kalau tidak ketemu persis, cari apakah ada nama menu di dalam kalimat
-        String namaDalamKalimat = cariNamaProdukDalamKalimat(input);
-        if (namaDalamKalimat != null) {
-            return balasanDetail(namaDalamKalimat);
-        }
-
-        // 3. Kalau benar-benar tidak ada, kembalikan null
         return null;
     }
 
