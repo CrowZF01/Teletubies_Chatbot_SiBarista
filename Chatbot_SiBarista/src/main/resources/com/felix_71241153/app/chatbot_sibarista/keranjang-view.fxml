@@ -63,7 +63,7 @@
             <Separator orientation="VERTICAL" style="-fx-background-color: #C8A882;" />
 
             <!-- ── Panel Kanan : Keranjang ── -->
-            <VBox prefWidth="320" style="-fx-background-color: #FBF7F0;" VBox.vgrow="ALWAYS">
+            <VBox prefWidth="320" style="-fx-background-color: #FBF7F0;" HBox.hgrow="ALWAYS">
 
                 <!-- Sub-header -->
                 <HBox alignment="CENTER_LEFT">
