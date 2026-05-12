@@ -58,11 +58,7 @@ public class KeranjangService {
     }
 
     /** Hapus item dari keranjang sepenuhnya. */
-    public void hapusProduk(Produk produk) {
-        items.removeIf(item ->
-                item.getProduk().getNamaProduk().equalsIgnoreCase(produk.getNamaProduk())
-        );
-    }
+
 
     /** Kosongkan seluruh keranjang. */
     public void kosongkanKeranjang() {

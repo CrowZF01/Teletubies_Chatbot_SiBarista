@@ -53,20 +53,26 @@ public class ChatbotService {
         if (input.equals("halo") || input.equals("hai") || input.equals("hi")
                 || input.equals("selamat pagi") || input.equals("selamat siang")
                 || input.equals("selamat sore") || input.equals("selamat malam") ||
-                    input.equals("apa kabar")) {
+                    input.equals("apa kabar") || input.equals("haloo") || input.equals("helo") ||
+                input.equals("hello") || input.equals("heloo") || input.equals("halloo") ||
+                input.equals("haii") || input.equals("hii") || input.equals("haloha") || input.equals("halohai")
+                || input.equals("hola") || input.equals("holaa")) {
             return balasanSapaan();
         }
 
         // 2. Bantuan
         if (input.contains("bantuan") || input.contains("help")
                 || input.contains("tolong") || input.contains("cara pakai")
-                || input.contains("harus ketik apa")) {
+                || input.contains("harus ketik apa") || input.contains("saya bingung")
+                ||input.contains("helep") || input.contains("tulung") || input.contains("ketik apa?")
+                || input.contains("ketik apa") || input.contains("ketik apa ya?") || input.contains("ketik apa ya")) {
             return balasanBantuan();
         }
 
         // 3. Kategori spesifik dulu (lebih spesifik daripada "menu")
         if (input.contains("non-coffee") || input.contains("non coffee") || input.contains("non cofee")
-        || input.contains("non coffe") || input.contains("non cofe")) {
+        || input.contains("non coffe") || input.contains("non cofe") || input.contains("non-cofe")
+        || input.contains("non-cofee") || input.contains("non-coffe")) {
             return balasanKategori("Non-Coffee");
         }
 
@@ -79,11 +85,11 @@ public class ChatbotService {
         }
 
         // 4. Menu umum
-        if (input.contains("menu")) {
+        if (input.contains("menu") || input.contains("menuu")) {
             return balasanMenu();
         }
 
-        if(input.contains("rekomendasi") || input.contains("rekomen") || input.contains("saran") || input.contains("best seller")){
+        if(input    .contains("rekomendasi") || input.contains("rekomen") || input.contains("saran") || input.contains("best seller")){
             return balasanRekomendasi();
         }
 

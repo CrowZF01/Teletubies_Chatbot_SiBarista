@@ -34,11 +34,8 @@
                             </Label>
                             <VBox spacing="0">
                                 <children>
-                                    <Label style="-fx-text-fill: #FBF7F0;" text="SiBarista">
+                                    <Label prefHeight="35.0" prefWidth="90.0" style="-fx-text-fill: #FBF7F0;" text="SiBarista">
                                         <font><Font name="System Bold" size="17.0" /></font>
-                                    </Label>
-                                    <Label style="-fx-text-fill: #C8A882;" text="your coffee companion">
-                                        <font><Font size="9.0" /></font>
                                     </Label>
                                 </children>
                             </VBox>
@@ -102,11 +99,11 @@
             <!-- Footer Sidebar -->
             <VBox alignment="CENTER_LEFT" spacing="4">
                 <children>
-                    <Label style="-fx-text-fill: #6B3A2A;" text="sibarista">
+                    <Label prefHeight="38.0" prefWidth="113.0" style="-fx-text-fill: #6B3A2A;" text="SiBarista">
                         <font><Font name="System Bold Italic" size="26.0" /></font>
-                    </Label>
-                    <Label style="-fx-text-fill: #3D1A00;" text="v1.0 · Est. 2025">
-                        <font><Font size="10.0" /></font>
+                  <VBox.margin>
+                     <Insets left="40.0" />
+                  </VBox.margin>
                     </Label>
                 </children>
                 <padding><Insets bottom="20" left="18" right="18" top="16" /></padding>
