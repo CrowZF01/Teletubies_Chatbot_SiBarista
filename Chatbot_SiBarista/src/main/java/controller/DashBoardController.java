@@ -96,6 +96,7 @@ public class DashBoardController {
         }
     }
 
+    //total berapa yg tersedia brp yg habis
     private void updateStatistics(List<Produk> list) {
         long total = list.size();
         long tersedia = list.stream().filter(p -> "Tersedia".equalsIgnoreCase(p.getStatusStok())).count();
@@ -106,26 +107,14 @@ public class DashBoardController {
         lblHabis.setText(String.valueOf(habis));
     }
 
-    private void setupSearch() {
-        FilteredList<Produk> filteredData = new FilteredList<>(masterData, p -> true);
-        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredData.setPredicate(produk -> {
-                if (newValue == null || newValue.isEmpty()) return true;
-                String lowerCaseFilter = newValue.toLowerCase();
-                return produk.getNamaProduk().toLowerCase().contains(lowerCaseFilter) ||
-                        produk.getNamaKategori().toLowerCase().contains(lowerCaseFilter);
-            });
-        });
-        SortedList<Produk> sortedData = new SortedList<>(filteredData);
-        sortedData.comparatorProperty().bind(productTable.comparatorProperty());
-        productTable.setItems(sortedData);
-    }
 
+    //tombol add produk
     @FXML
     private void handleAdd() throws IOException {
         showForm(null);
     }
 
+    //tombol edit
     @FXML
     private void handleEdit() throws IOException {
         Produk selected = productTable.getSelectionModel().getSelectedItem();
@@ -136,6 +125,7 @@ public class DashBoardController {
         }
     }
 
+    //tombol hapus
     @FXML
     private void handleDelete() {
         Produk selected = productTable.getSelectionModel().getSelectedItem();
@@ -150,6 +140,7 @@ public class DashBoardController {
         }
     }
 
+    //tombol logout ketika diklik balik ke chatbot
     @FXML
     private void handleLogout() throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/com/felix_71241153/app/chatbot_sibarista/Chat-view.fxml"));
@@ -157,6 +148,7 @@ public class DashBoardController {
         stage.setScene(new Scene(root));
     }
 
+    //untuk menampilkan form edit/tambah produk
     private void showForm(Produk produk) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/chatbot_sibarista/product-form-view.fxml"));
         Parent root = loader.load();

@@ -43,6 +43,7 @@ public class KeranjangController {
         refreshKeranjang();
     }
 
+    //ngeload menu
     private void muatSemuaMenu() {
         if (sectionTitle != null) sectionTitle.setText("Semua Menu");
         try {
@@ -51,6 +52,8 @@ public class KeranjangController {
             e.printStackTrace();
         }
     }
+
+    //tombol jadi dinamis dikategori
     private void setTombolAktif(Button tombolAktif) {
         String stylePasif = "-fx-background-color: transparent; -fx-text-fill: #C8A882; -fx-font-size: 12px; -fx-cursor: hand; -fx-border-color: #C8A882; -fx-border-radius: 20; -fx-border-width: 1; -fx-background-radius: 20; -fx-padding: 5 14 5 14;";
         String styleAktif = "-fx-background-color: #C8A882; -fx-text-fill: #1C0A00; -fx-font-size: 12px; -fx-cursor: hand; -fx-background-radius: 20; -fx-padding: 5 14 5 14; -fx-font-weight: bold;";
@@ -66,30 +69,35 @@ public class KeranjangController {
     }
 
 
+    //filter semua
     @FXML
     private void handleFilterSemua(ActionEvent event) {
         muatSemuaMenu();
         setTombolAktif(btnFilterSemua);
     }
 
+    //filter kopi
     @FXML
     private void handleFilterKopi(ActionEvent event) {
         muatMenuByKategori(1, "Kopi");
         setTombolAktif(btnFilterKopi);
     }
 
+    //filter non kopi
     @FXML
     private void handleFilterNonKopi(ActionEvent event) {
         muatMenuByKategori(2, "Non-Kopi");
         setTombolAktif(btnFilterNonKopi);
     }
 
+    //filter snacks
     @FXML
     private void handleFilterMakanan(ActionEvent event) {
         muatMenuByKategori(3, "Snack");
         setTombolAktif(btnFilterMakanan);
     }
 
+    //logic filter menu dari kategori dan mengganti judulnya sesuai kategori
     private void muatMenuByKategori(int idKategori, String judul) {
         if (sectionTitle != null) sectionTitle.setText(judul);
         try {
@@ -99,8 +107,7 @@ public class KeranjangController {
         }
     }
 
-    // ── LOGIKA RENDER (SANGAT BERSIH SEKARANG) ────────────────────────────────
-
+    //menampilkan produk dalam card biar tidak ketumpuk dengan yg lama
     private void tampilkanDaftarProduk(List<Produk> produkList) {
         menuListContainer.getChildren().clear();
         for (Produk p : produkList) {
@@ -108,6 +115,7 @@ public class KeranjangController {
         }
     }
 
+    //buat kartu sebagai wadah untuk menaruh produk dan juga image
     private HBox buatKartuProduk(Produk p) {
         try {
             // Load Mini FXML
@@ -124,11 +132,13 @@ public class KeranjangController {
 
             Button btnTambah = (Button) kartu.lookup("#btnTambah");
             btnTambah.setOnAction(e -> {
-                keranjangService.tambahProduk(p);
+                // SOLUSI: Tambahkan 'new java.util.ArrayList<>()' sebagai parameter kedua
+                // Ini menyatakan bahwa produk ditambah tanpa kustomisasi khusus (default)
+                keranjangService.tambahProduk(p, new java.util.ArrayList<>());
                 refreshKeranjang();
             });
 
-            // Hover effect (Satu-satunya styling yang tersisa di Java)
+            // Hover effect
             btnTambah.setOnMouseEntered(e -> btnTambah.setStyle(btnTambah.getStyle().replace("#1C0A00", "#6B3A2A")));
             btnTambah.setOnMouseExited(e -> btnTambah.setStyle(btnTambah.getStyle().replace("#6B3A2A", "#1C0A00")));
 
@@ -140,6 +150,7 @@ public class KeranjangController {
         }
     }
 
+    //untuk melihat apa saja yg telah dimasukkan ke keranjang dan total harganya
     private void refreshKeranjang() {
         cartItemContainer.getChildren().clear();
         List<Keranjang> items = keranjangService.getItems();
@@ -157,6 +168,7 @@ public class KeranjangController {
         if (totalLabel != null) totalLabel.setText(formatRupiah(keranjangService.getTotalHarga()));
     }
 
+    //untuk menampilkan card dan juga isi produknya sesuai dengan harga dan juga jumlah produknya
     private HBox buatBarisKeranjang(Keranjang item) {
         try {
             // Load Mini FXML
@@ -171,12 +183,12 @@ public class KeranjangController {
 
             // Aksi Tombol
             ((Button) baris.lookup("#btnKurang")).setOnAction(e -> {
-                keranjangService.kurangiProduk(p);
+                keranjangService.kurangiProduk(p, new java.util.ArrayList<>());
                 refreshKeranjang();
             });
 
             ((Button) baris.lookup("#btnTambah")).setOnAction(e -> {
-                keranjangService.tambahProduk(p);
+                keranjangService.tambahProduk(p, new java.util.ArrayList<>());
                 refreshKeranjang();
             });
 
@@ -188,6 +200,7 @@ public class KeranjangController {
         }
     }
 
+    //menampilkan seperti alert total harganya
     @FXML
     private void handleCheckout(ActionEvent event) {
         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
@@ -199,6 +212,7 @@ public class KeranjangController {
         refreshKeranjang();
     }
 
+    //untuk ngeload gambar
     private Image loadGambarProduk(String namaFile) {
         if (namaFile == null || namaFile.isEmpty()) return null;
         try {
@@ -210,6 +224,7 @@ public class KeranjangController {
         return null;
     }
 
+    //format rupiah
     private String formatRupiah(double angka) {
         return RUPIAH.format(angka);
     }

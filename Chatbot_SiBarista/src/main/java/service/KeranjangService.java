@@ -2,19 +2,12 @@ package service;
 
 import model.Keranjang;
 import model.Produk;
-
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Singleton service untuk menyimpan state keranjang belanja
- * agar bisa diakses oleh ChatBotController maupun CartController.
- */
 public class KeranjangService {
 
-    // ── Singleton ────────────────────────────────────────────────────────────
     private static KeranjangService instance;
-
     private KeranjangService() {}
 
     public static KeranjangService getInstance() {
@@ -24,32 +17,33 @@ public class KeranjangService {
         return instance;
     }
 
-    // ── Data ─────────────────────────────────────────────────────────────────
     private final List<Keranjang> items = new ArrayList<>();
 
-    // ── Public API ────────────────────────────────────────────────────────────
-
     /**
-     * Tambah produk ke keranjang.
-     * Jika produk sudah ada, naikkan jumlahnya 1.
+     * Tambah produk ke keranjang dengan kustomisasi.
      */
-    public void tambahProduk(Produk produk) {
+    public void tambahProduk(Produk produk, List<String> kustomisasi) {
         for (Keranjang item : items) {
-            if (item.getProduk().getNamaProduk().equalsIgnoreCase(produk.getNamaProduk())) {
-                item.tambah();
+            // Cek apakah produk DAN kustomisasinya SAMA PERSIS
+            if (item.getProduk().getNamaProduk().equalsIgnoreCase(produk.getNamaProduk()) &&
+                    item.getKustomisasi().equals(kustomisasi)) {
+
+                item.tambah(); // Jika sama persis, cukup tambah jumlahnya
                 return;
             }
         }
-        items.add(new Keranjang(produk, 1));
+        // Jika beda produk atau beda kustomisasi, buat baris baru
+        items.add(new Keranjang(produk, 1, kustomisasi));
     }
 
     /**
-     * Kurangi jumlah produk sebesar 1.
-     * Jika jumlah menjadi 0, hapus item dari keranjang.
+     * Kurangi jumlah produk berdasarkan kustomisasi spesifik.
      */
-    public void kurangiProduk(Produk produk) {
+    public void kurangiProduk(Produk produk, List<String> kustomisasi) {
         items.removeIf(item -> {
-            if (item.getProduk().getNamaProduk().equalsIgnoreCase(produk.getNamaProduk())) {
+            if (item.getProduk().getNamaProduk().equalsIgnoreCase(produk.getNamaProduk()) &&
+                    item.getKustomisasi().equals(kustomisasi)) {
+
                 item.kurang();
                 return item.getJumlah() == 0;
             }
@@ -57,26 +51,17 @@ public class KeranjangService {
         });
     }
 
-    /** Hapus item dari keranjang sepenuhnya. */
-
-
-    /** Kosongkan seluruh keranjang. */
-    public void kosongkanKeranjang() {
-        items.clear();
+    /** Hapus item tertentu sepenuhnya. */
+    public void hapusProduk(Produk produk, List<String> kustomisasi) {
+        items.removeIf(item ->
+                item.getProduk().getNamaProduk().equalsIgnoreCase(produk.getNamaProduk()) &&
+                        item.getKustomisasi().equals(kustomisasi)
+        );
     }
 
-    /** Kembalikan seluruh item keranjang (read-only view). */
-    public List<Keranjang> getItems() {
-        return items;
-    }
-
-    /** Hitung total harga semua item. */
-    public double getTotalHarga() {
-        return items.stream().mapToDouble(Keranjang::getSubtotal).sum();
-    }
-
-    /** Hitung total jumlah item (untuk badge di tombol keranjang). */
-    public int getTotalJumlah() {
-        return items.stream().mapToInt(Keranjang::getJumlah).sum();
-    }
+    // --- Method lainnya tetap sama ---
+    public void kosongkanKeranjang() { items.clear(); }
+    public List<Keranjang> getItems() { return items; }
+    public double getTotalHarga() { return items.stream().mapToDouble(Keranjang::getSubtotal).sum(); }
+    public int getTotalJumlah() { return items.stream().mapToInt(Keranjang::getJumlah).sum(); }
 }

@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 /**
  * Model satu item di dalam keranjang belanja.
  * Menyimpan referensi ke Produk dan jumlah (quantity).
@@ -7,12 +9,17 @@ package model;
 public class Keranjang {
 
     private Produk produk;
-    private int    jumlah;
+    private int jumlah;
+    private List<String> kustomisasi;
 
-    public Keranjang(Produk produk, int jumlah) {
+    public Keranjang(Produk produk, int jumlah, List<String> kustomisasi) {
         this.produk = produk;
         this.jumlah = jumlah;
+        this.kustomisasi = kustomisasi;
     }
+
+    // Di class model.Keranjang
+
 
     // ── Getter & Setter ───────────────────────────────────────────────────────
 
@@ -21,6 +28,14 @@ public class Keranjang {
 
     public int  getJumlah()            { return jumlah; }
     public void setJumlah(int jumlah)  { this.jumlah = jumlah; }
+
+    public List<String> getKustomisasi() {
+        return kustomisasi;
+    }
+
+    public void setKustomisasi(List<String> kustomisasi) {
+        this.kustomisasi = kustomisasi;
+    }
 
     // ── Kalkulasi ─────────────────────────────────────────────────────────────
 

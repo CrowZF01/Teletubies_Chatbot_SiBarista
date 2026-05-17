@@ -18,6 +18,7 @@ public class LoginController {
 
     private AdminService adminService = new AdminService();
 
+    //login
     @FXML
     private void handleLogin(ActionEvent event) {
         String user = usernameField.getText();
@@ -31,6 +32,7 @@ public class LoginController {
         }
     }
 
+    //kembali ke chatbot
     @FXML
     private void handleBack(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/com/felix_71241153/app/chatbot_sibarista/Chat-view.fxml"));
@@ -38,6 +40,7 @@ public class LoginController {
         stage.setScene(new Scene(root));
     }
 
+    //ketika berhasil login lalu dibawa ke dashboard
     private void navigateToDashboard() {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/com/felix_71241153/app/chatbot_sibarista/dashboard-view.fxml"));

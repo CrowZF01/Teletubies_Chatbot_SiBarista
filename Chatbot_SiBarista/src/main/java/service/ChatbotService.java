@@ -5,10 +5,13 @@ import model.Produk;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChatbotService {
 
+    //query untuk menampilkan daftar produk
     public List<Produk> getDaftarProduk() throws SQLException {
         List<Produk> list = new ArrayList<>();
 
@@ -17,15 +20,15 @@ public class ChatbotService {
                 "FROM produk p " +
                 "JOIN kategori k ON p.id_kategori = k.id_kategori";
 
-        try (Connection conn = Database.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
+        try (Connection conn = Database.getConnection(); //koneksi
+             Statement stmt = conn.createStatement(); //untuk querynya
+             ResultSet rs = stmt.executeQuery(query)) { //untuk memberikan datanya dari db
 
             while (rs.next()) {
                 list.add(new Produk(
                         rs.getString("id_produk"),
                         rs.getString("nama_produk"),
-                        rs.getString("nama_kategori"), // Hasil JOIN
+                        rs.getString("nama_kategori"),
                         rs.getString("deskripsi"),
                         rs.getInt("harga"),
                         rs.getString("status_stok"),
@@ -38,10 +41,7 @@ public class ChatbotService {
         return list;
     }
 
-    // =========================================================
-    // 1. prosesInput()  [WAJIB]
-    // Method utama untuk memproses semua pesan user
-    // =========================================================
+    //untuk ngecek klo pesannya tidak boleh kosong
     public String prosesInput(String pesan) throws SQLException {
         if (!validasiTeks(pesan)) {
             return "Silakan ketik pesan terlebih dahulu.";
@@ -53,7 +53,7 @@ public class ChatbotService {
         if (input.equals("halo") || input.equals("hai") || input.equals("hi")
                 || input.equals("selamat pagi") || input.equals("selamat siang")
                 || input.equals("selamat sore") || input.equals("selamat malam") ||
-                    input.equals("apa kabar") || input.equals("haloo") || input.equals("helo") ||
+                input.equals("apa kabar") || input.equals("haloo") || input.equals("helo") ||
                 input.equals("hello") || input.equals("heloo") || input.equals("halloo") ||
                 input.equals("haii") || input.equals("hii") || input.equals("haloha") || input.equals("halohai")
                 || input.equals("hola") || input.equals("holaa")) {
@@ -71,8 +71,8 @@ public class ChatbotService {
 
         // 3. Kategori spesifik dulu (lebih spesifik daripada "menu")
         if (input.contains("non-coffee") || input.contains("non coffee") || input.contains("non cofee")
-        || input.contains("non coffe") || input.contains("non cofe") || input.contains("non-cofe")
-        || input.contains("non-cofee") || input.contains("non-coffe")) {
+                || input.contains("non coffe") || input.contains("non cofe") || input.contains("non-cofe")
+                || input.contains("non-cofee") || input.contains("non-coffe")) {
             return balasanKategori("Non-Coffee");
         }
 
@@ -85,15 +85,15 @@ public class ChatbotService {
         }
 
         // 4. Menu umum
-        if (input.contains("menu") || input.contains("menuu")) {
+        if (input.contains("menu")) {
             return balasanMenu();
         }
 
-        if(input    .contains("rekomendasi") || input.contains("rekomen") || input.contains("saran") || input.contains("best seller")){
+        if(input.contains("rekomendasi") || input.contains("rekomen") || input.contains("saran") || input.contains("best seller")){
             return balasanRekomendasi();
         }
 
-
+        //untuk mencari nama produk
         String produkDitemukan = cariNamaProdukDalamKalimat(input);
         if (produkDitemukan != null) {
             Produk p = balasanDetail(produkDitemukan); // Ambil objek Produk-nya dulu
@@ -114,16 +114,12 @@ public class ChatbotService {
 
 
 
-    // =========================================================
-    // 2. validasiTeks() [WAJIB]
-    // =========================================================
+    //validasi teks
     public boolean validasiTeks(String pesan) {
         return pesan != null && !pesan.trim().isEmpty();
     }
 
-    // =========================================================
-    // 3. balasanMenu() [WAJIB]
-    // =========================================================
+    //balasan menu
     public String balasanMenu() {
         return """
                 Baik! Silakan pilih kategori menu yang ingin Anda jelajahi:
@@ -135,9 +131,7 @@ public class ChatbotService {
                 """;
     }
 
-    // =========================================================
-    // 4. balasanKategori() [WAJIB]
-    // =========================================================
+    //balasan daftar menu sesuai kategori
     public String balasanKategori(String kategori) {
         StringBuilder hasil = new StringBuilder();
         hasil.append("Berikut daftar menu kategori ").append(kategori).append(":\n");
@@ -168,10 +162,7 @@ public class ChatbotService {
     }
 
 
-    // =========================================================
-    // 5. balasanDetail() [WAJIB]
-    // Mengembalikan null jika tidak ditemukan
-    // =========================================================
+    //untuk balasan detail produk
     public Produk balasanDetail(String namaMenu) {
         String input = normalisasiInput(namaMenu);
 
@@ -199,7 +190,6 @@ public class ChatbotService {
                         rs.getString("status_stok"),
                         rs.getString("gambar")
                 );
-//                return formatDetailProduk(p);
             }
 
         } catch (SQLException e) {
@@ -209,6 +199,7 @@ public class ChatbotService {
         return null;
     }
 
+    //untuk mencari nama produk dalam kalimat
     public String cariNamaProdukDalamKalimat(String input){
         String query = "SELECT nama_produk FROM produk";
 
@@ -229,9 +220,7 @@ public class ChatbotService {
         return null;
     }
 
-    // =========================================================
-    // 6. balasanFallback() [WAJIB]
-    // =========================================================
+    //fallback
     public String balasanFallback() {
         return """
                 Maaf, saya belum memahami pesan Anda.
@@ -248,9 +237,7 @@ public class ChatbotService {
                 """;
     }
 
-    // =========================================================
-    // 7. normalisasiInput() [BAGUS KALAU SEMPAT]
-    // =========================================================
+    //normalisasi inputan
     public String normalisasiInput(String pesan) {
         if (pesan == null) {
             return "";
@@ -263,9 +250,7 @@ public class ChatbotService {
                 .replaceAll("\\s+", " ");   // rapikan spasi berlebih
     }
 
-    // =========================================================
-    // 8. balasanSapaan() [BAGUS KALAU SEMPAT]
-    // =========================================================
+    //balasan sapaan
     public String balasanSapaan() {
         return """
                 Halo, saya SiBarista ☕
@@ -277,9 +262,7 @@ public class ChatbotService {
                 """;
     }
 
-    // =========================================================
-    // 9. balasanBantuan() [BAGUS KALAU SEMPAT]
-    // =========================================================
+    //balasan bantuan
     public String balasanBantuan() {
         return """
                 Panduan penggunaan chatbot SiBarista:
@@ -299,9 +282,7 @@ public class ChatbotService {
                 """;
     }
 
-    // =========================================================
-    // HELPER METHOD TAMBAHAN
-    // =========================================================
+    //format untuk detail produk
     public String formatDetailProduk(Produk produk) {
         return """
                 Detail Menu:
@@ -323,11 +304,13 @@ public class ChatbotService {
         );
     }
 
+    //format rupiah
     private String formatRupiah(int harga) {
         String angka = String.format("%,d", harga).replace(',', '.');
         return "Rp" + angka;
     }
 
+    //balasan untuk rekomendasi (random dari bd dipilih 2)
     public String balasanRekomendasi(){
         StringBuilder hasil = new StringBuilder();
         hasil.append("Ini adalah beberapa rekomendasi dari SiBarista :\n\n");
@@ -352,9 +335,7 @@ public class ChatbotService {
         return hasil.toString();
     }
 
-    // =========================================================
-    // METHOD BARU: Mencari BANYAK produk sekaligus dalam kalimat
-    // =========================================================
+    //cari produk dalam kalimat (bisa lebih dari 1)
     public List<Produk> cariSemuaProdukDalamKalimat(String pesan) {
         List<Produk> produkDitemukan = new ArrayList<>();
         String input = normalisasiInput(pesan);
@@ -382,5 +363,51 @@ public class ChatbotService {
         }
 
         return produkDitemukan;
+    }
+
+//    public List<String> getOpsiKustom(int idProduk) {
+//        List<String> listOpsi = new ArrayList<>();
+//        String query = "SELECT nama_opsi FROM opsi_kustom WHERE id_kategori = (SELECT id_kategori FROM produk WHERE id_produk = ?)";
+//
+//        try (Connection conn = Database.getConnection();
+//             PreparedStatement pstmt = conn.prepareStatement(query)) {
+//            pstmt.setInt(1, idProduk);
+//            ResultSet rs = pstmt.executeQuery();
+//            while (rs.next()) {
+//                listOpsi.add(rs.getString("nama_opsi"));
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return listOpsi;
+//    }
+
+    public Map<String, List<String>> getOpsiKustom(int idProduk) {
+        Map<String, List<String>> groupedOptions = new LinkedHashMap<>();
+        String query = """
+            SELECT nama_opsi, grup_opsi 
+            FROM opsi_kustom 
+            WHERE id_kategori = (SELECT id_kategori FROM produk WHERE id_produk = ?)
+            """;
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, idProduk);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String grup = rs.getString("grup_opsi"); // Misal: "Suhu"
+                String nama = rs.getString("nama_opsi"); // Misal: "Panas"
+
+                if (!groupedOptions.containsKey(grup)) {
+                    groupedOptions.put(grup, new ArrayList<>());
+                }
+                groupedOptions.get(grup).add(nama);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return groupedOptions;
     }
 }

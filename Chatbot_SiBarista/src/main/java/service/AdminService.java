@@ -7,6 +7,7 @@ import java.sql.*;
 
 public class AdminService {
 
+    //query cek login
     public boolean login(String username, String password) {
         String query = "SELECT password FROM admin WHERE username = ?";
 
@@ -33,6 +34,7 @@ public class AdminService {
     }
 
 
+    //query untuk nyimpen produk
     public boolean simpanProduk(Produk p, boolean isEdit) {
         String query;
         if (isEdit) {
@@ -63,6 +65,7 @@ public class AdminService {
         }
     }
 
+    //query untuk hapus produk
     public boolean hapusProduk(String idProduk) {
         String query = "DELETE FROM produk WHERE id_produk = ?";
         try (Connection conn = Database.getConnection();
