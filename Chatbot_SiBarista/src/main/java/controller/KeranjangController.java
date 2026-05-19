@@ -115,14 +115,11 @@ public class KeranjangController {
         }
     }
 
-    //buat kartu sebagai wadah untuk menaruh produk dan juga image
     private HBox buatKartuProduk(Produk p) {
         try {
-            // Load Mini FXML
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/chatbot_sibarista/kartu-produk.fxml"));
-            HBox kartu = loader.load();
+            final HBox kartu = loader.load();
 
-            // Isi Data menggunakan lookup ID
             ((Label) kartu.lookup("#lblNama")).setText(p.getNamaProduk());
             ((Label) kartu.lookup("#lblHarga")).setText(formatRupiah(p.getHarga()));
 
@@ -130,27 +127,118 @@ public class KeranjangController {
             Image img = loadGambarProduk(p.getGambar());
             if (img != null) iv.setImage(img);
 
-            Button btnTambah = (Button) kartu.lookup("#btnTambah");
-            btnTambah.setOnAction(e -> {
-                // SOLUSI: Tambahkan 'new java.util.ArrayList<>()' sebagai parameter kedua
-                // Ini menyatakan bahwa produk ditambah tanpa kustomisasi khusus (default)
-                keranjangService.tambahProduk(p, new java.util.ArrayList<>());
-                refreshKeranjang();
-            });
+            final Button btnTambah = (Button) kartu.lookup("#btnTambah");
+            final Button btnDropdown = (Button) kartu.lookup("#btnDropdown");
 
-            // Hover effect
-            btnTambah.setOnMouseEntered(e -> btnTambah.setStyle(btnTambah.getStyle().replace("#1C0A00", "#6B3A2A")));
-            btnTambah.setOnMouseExited(e -> btnTambah.setStyle(btnTambah.getStyle().replace("#6B3A2A", "#1C0A00")));
+            // Wadah utama pembungkus kartu asli + panel kustomisasi
+            final VBox wadahGrup = new VBox(0);
+            wadahGrup.setMaxWidth(Double.MAX_VALUE);
+            wadahGrup.getChildren().add(kartu);
 
-            VBox.setMargin(kartu, new Insets(0, 0, 8, 0));
-            return kartu;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new HBox();
+            final List<javafx.scene.control.RadioButton> semuaRadioKatalog = new java.util.ArrayList<>();
+            final VBox panelKustom = new VBox(6);
+            panelKustom.setVisible(false);
+            panelKustom.setManaged(false);
+
+            if (btnDropdown != null) {
+                java.util.Map<String, List<String>> opsiMap = service.ChatbotService.getInstance().getOpsiKustom(Integer.parseInt(p.getIdProduk()));
+
+                if (opsiMap == null || opsiMap.isEmpty()) {
+                    btnDropdown.setVisible(false);
+                } else {
+                    panelKustom.setPadding(new Insets(10, 15, 12, 120));
+                    panelKustom.setStyle("-fx-background-color: #6B3A2A; -fx-background-radius: 0 0 11 11;");
+                    panelKustom.setMaxWidth(Double.MAX_VALUE);
+
+                    Label lblJudul = new Label("Pilih Kustomisasi :");
+                    lblJudul.setStyle("-fx-text-fill: #FBF7F0; -fx-font-weight: bold; -fx-font-size: 11px;");
+                    panelKustom.getChildren().add(lblJudul);
+
+                    for (java.util.Map.Entry<String, List<String>> entry : opsiMap.entrySet()) {
+                        String grup = entry.getKey();
+                        List<String> listNamaOpsi = entry.getValue();
+
+                        Label lblGrup = new Label(grup + ":");
+                        lblGrup.setStyle("-fx-text-fill: #C8A882; -fx-font-weight: bold; -fx-font-size: 10px;");
+                        panelKustom.getChildren().add(lblGrup);
+
+                        javafx.scene.control.ToggleGroup grupTombol = new javafx.scene.control.ToggleGroup();
+                        javafx.scene.layout.FlowPane fp = new javafx.scene.layout.FlowPane(10, 5);
+
+                        for (String opsi : listNamaOpsi) {
+                            javafx.scene.control.RadioButton rb = new javafx.scene.control.RadioButton(opsi);
+                            rb.setStyle("-fx-text-fill: #FBF7F0; -fx-font-size: 10px;");
+                            rb.setToggleGroup(grupTombol);
+                            semuaRadioKatalog.add(rb);
+                            fp.getChildren().add(rb);
+                        }
+                        panelKustom.getChildren().add(fp);
+                    }
+
+                    wadahGrup.getChildren().add(panelKustom);
+
+                    btnDropdown.setOnAction(new javafx.event.EventHandler<javafx.event.ActionEvent>() {
+                        @Override
+                        public void handle(javafx.event.ActionEvent event) {
+                            if (panelKustom.isVisible()) {
+                                panelKustom.setVisible(false);
+                                panelKustom.setManaged(false);
+                                kartu.setStyle(kartu.getStyle() + "; -fx-background-radius: 12;");
+                            } else {
+                                panelKustom.setVisible(true);
+                                panelKustom.setManaged(true);
+                                kartu.setStyle(kartu.getStyle() + "; -fx-background-radius: 12 12 0 0;");
+                            }
+                        }
+                    });
+                }
+            }
+
+        btnTambah.setOnAction(new javafx.event.EventHandler<javafx.event.ActionEvent>() {
+        @Override
+        public void handle(javafx.event.ActionEvent event) {
+            List<String> kustomBaru = new java.util.ArrayList<>();
+            for (javafx.scene.control.RadioButton r : semuaRadioKatalog) {
+                if (r.isSelected()) {
+                    kustomBaru.add(r.getText());
+                }
+            }
+            keranjangService.tambahProduk(p, kustomBaru);
+            refreshKeranjang();
+            for (javafx.scene.control.RadioButton r : semuaRadioKatalog) {
+                r.setSelected(false);
+            }
+            if (panelKustom.isVisible()) {
+                panelKustom.setVisible(false);
+                panelKustom.setManaged(false);
+                kartu.setStyle(kartu.getStyle() + "; -fx-background-radius: 12;");
+            }
         }
-    }
+    });
+        btnTambah.setOnMouseEntered(new javafx.event.EventHandler<javafx.scene.input.MouseEvent>() {
+            @Override
+            public void handle(javafx.scene.input.MouseEvent event) {
+                btnTambah.setStyle(btnTambah.getStyle().replace("#1C0A00", "#6B3A2A"));
+            }
+        });
+        btnTambah.setOnMouseExited(new javafx.event.EventHandler<javafx.scene.input.MouseEvent>() {
+            @Override
+            public void handle(javafx.scene.input.MouseEvent event) {
+                btnTambah.setStyle(btnTambah.getStyle().replace("#6B3A2A", "#1C0A00"));
+            }
+        });
 
-    //untuk melihat apa saja yg telah dimasukkan ke keranjang dan total harganya
+        VBox.setMargin(wadahGrup, new Insets(0, 0, 8, 0));
+        HBox kartuFinal = new HBox(wadahGrup);
+        kartuFinal.setMaxWidth(Double.MAX_VALUE);
+        javafx.scene.layout.HBox.setHgrow(wadahGrup, javafx.scene.layout.Priority.ALWAYS);
+
+        return kartuFinal;
+    } catch (Exception e) {
+        e.printStackTrace();
+        return new HBox();
+    }
+}
     private void refreshKeranjang() {
         cartItemContainer.getChildren().clear();
         List<Keranjang> items = keranjangService.getItems();
@@ -215,7 +303,7 @@ public class KeranjangController {
             e.printStackTrace();
             return new HBox();
         }
-    }   
+    }
 
     //menampilkan seperti alert total harganya
     @FXML

@@ -310,7 +310,7 @@ public class ChatBotController {
             bubbleBox.getChildren().add(labelPesan);
 
             //menu costum
-            List<CheckBox> listCheckbox = new ArrayList<>();
+            List<RadioButton> listRadioButton = new ArrayList<>();
 
             if (p != null && "Coffee".equalsIgnoreCase(p.getNamaKategori())) {
                 Map<String, List<String>> opsiMap = chatbotService.getOpsiKustom(Integer.parseInt(p.getIdProduk()));
@@ -325,13 +325,15 @@ public class ChatBotController {
                         Label lblGrup = new Label(grup + ":");
                         lblGrup.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #6B3A2A;");
 
+                        ToggleGroup grupTombol = new ToggleGroup();
                         FlowPane fp = new FlowPane(10, 5);
                         bubbleBox.setMaxWidth(450);
                         for (String opsi : namaOpsi) {
-                            CheckBox cb = new CheckBox(opsi);
-                            cb.setStyle("-fx-font-size: 11px; -fx-text-fill: #1C0A00;");
-                            listCheckbox.add(cb);
-                            fp.getChildren().add(cb);
+                            RadioButton rb = new RadioButton(opsi);
+                            rb.setStyle("-fx-font-size: 11px; -fx-text-fill: #1C0A00;");
+                            rb.setToggleGroup(grupTombol);
+                            listRadioButton.add(rb);
+                            fp.getChildren().add(rb);
                         }
                         kustomContainer.getChildren().addAll(lblGrup, fp);
                     });
@@ -348,8 +350,8 @@ public class ChatBotController {
                 final Produk produkRef = p;
                 btnKeranjang.setOnAction(e -> {
                     List<String> pilihanUser = new ArrayList<>();
-                    for (CheckBox cb : listCheckbox) {
-                        if (cb.isSelected()) pilihanUser.add(cb.getText());
+                    for (RadioButton rb : listRadioButton) {
+                        if (rb.isSelected()) pilihanUser.add(rb.getText());
                     }
 
                     keranjangService.tambahProduk(produkRef, pilihanUser);

@@ -11,6 +11,15 @@ import java.util.Map;
 
 public class ChatbotService {
 
+    private static ChatbotService instance;
+
+    public static ChatbotService getInstance() {
+        if (instance == null) {
+            instance = new ChatbotService();
+        }
+        return instance;
+    }
+
     //query untuk menampilkan daftar produk
     public List<Produk> getDaftarProduk() throws SQLException {
         List<Produk> list = new ArrayList<>();
