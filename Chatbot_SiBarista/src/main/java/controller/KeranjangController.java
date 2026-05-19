@@ -176,19 +176,36 @@ public class KeranjangController {
             HBox baris = loader.load();
             Produk p = item.getProduk();
 
-            // Isi Data
+            // 1. Isi Data Utama
             ((Label) baris.lookup("#lblNama")).setText(p.getNamaProduk());
             ((Label) baris.lookup("#lblSubtotal")).setText(formatRupiah(item.getSubtotal()));
             ((Label) baris.lookup("#lblJumlah")).setText(String.valueOf(item.getJumlah()));
 
-            // Aksi Tombol
+            // 2. LOGIKA BARU: Tampilkan Kustomisasi (Jika Ada)
+            Label lblKustom = (Label) baris.lookup("#lblKustom");
+            List<String> listKustom = item.getKustomisasi();
+
+            if (listKustom != null && !listKustom.isEmpty()) {
+                // Gabungkan list menjadi string (Contoh: "Dingin, Less Sugar, Arabica")
+                lblKustom.setText(String.join(", ", listKustom));
+                lblKustom.setVisible(true);
+                lblKustom.setManaged(true);
+            } else {
+                // Jika kosong (misal Snacks), sembunyikan labelnya agar tidak makan tempat
+                lblKustom.setVisible(false);
+                lblKustom.setManaged(false);
+            }
+
+            // 3. PERBAIKAN BUG: Aksi Tombol Kurang & Tambah
+            // Sebelumnya kamu pakai 'new java.util.ArrayList<>()', itu yang bikin datanya reset!
+            // Sekarang kita harus pakai kustomisasi bawaan dari 'item'
             ((Button) baris.lookup("#btnKurang")).setOnAction(e -> {
-                keranjangService.kurangiProduk(p, new java.util.ArrayList<>());
+                keranjangService.kurangiProduk(p, item.getKustomisasi());
                 refreshKeranjang();
             });
 
             ((Button) baris.lookup("#btnTambah")).setOnAction(e -> {
-                keranjangService.tambahProduk(p, new java.util.ArrayList<>());
+                keranjangService.tambahProduk(p, item.getKustomisasi());
                 refreshKeranjang();
             });
 
@@ -198,7 +215,7 @@ public class KeranjangController {
             e.printStackTrace();
             return new HBox();
         }
-    }
+    }   
 
     //menampilkan seperti alert total harganya
     @FXML
