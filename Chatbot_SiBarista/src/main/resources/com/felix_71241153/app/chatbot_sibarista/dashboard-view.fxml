@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.*?>
 
-<VBox prefHeight="700.0" prefWidth="1000.0" spacing="0.0" style="-fx-background-color: #FDFBF9;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashBoardController">
+<VBox prefHeight="700.0" prefWidth="1000.0" spacing="0.0" style="-fx-background-color: #FDFBF9;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashBoardController">
 
     <!-- HEADER NAV -->
     <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-background-color: #4A3020; -fx-padding: 15 30 15 30;">
@@ -34,16 +34,20 @@
     </HBox>
 
     <!-- CONTENT -->
-    <VBox spacing="15.0" VBox.vgrow="ALWAYS" style="-fx-padding: 0 30 20 30;">
+    <VBox spacing="15.0" style="-fx-padding: 0 30 20 30;" VBox.vgrow="ALWAYS">
         <HBox alignment="CENTER_LEFT">
             <Label text="Daftar Menu Café" textFill="#4A3020">
                 <font><Font name="System Bold" size="20.0" /></font>
             </Label>
             <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleManageOpsi" style="-fx-background-color: transparent; -fx-border-color: #4A3020; -fx-border-radius: 8; -fx-text-fill: #4A3020; -fx-font-weight: bold; -fx-padding: 10 20; -fx-cursor: hand;" text="⚙ Kelola Opsi Custom Kopi">
+            <HBox.margin>
+               <Insets right="20.0" />
+            </HBox.margin></Button>
             <Button onAction="#handleAdd" style="-fx-background-color: #4A3020; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 8;" text="+ Tambah Produk Baru" />
         </HBox>
 
-        <TableView fx:id="productTable" VBox.vgrow="ALWAYS" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #D4B896;">
+        <TableView fx:id="productTable" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #D4B896;" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="colNo" prefWidth="70.0" text="NO" />
                 <TableColumn fx:id="colNama" prefWidth="200.0" text="Nama Produk" />

@@ -27,15 +27,11 @@ public class Keranjang {
     public void   setProduk(Produk p)  { this.produk = p; }
 
     public int  getJumlah()            { return jumlah; }
-    public void setJumlah(int jumlah)  { this.jumlah = jumlah; }
 
     public List<String> getKustomisasi() {
         return kustomisasi;
     }
 
-    public void setKustomisasi(List<String> kustomisasi) {
-        this.kustomisasi = kustomisasi;
-    }
 
     // ── Kalkulasi ─────────────────────────────────────────────────────────────
 

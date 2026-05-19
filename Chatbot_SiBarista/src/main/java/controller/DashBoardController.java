@@ -162,4 +162,19 @@ public class DashBoardController {
         stage.showAndWait();
         loadData();
     }
+
+    @FXML
+    private void handleManageOpsi() throws java.io.IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/chatbot_sibarista/opsi-form-view.fxml"));
+        javafx.scene.Parent root = loader.load();
+
+        Stage stage = new Stage();
+        stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+        stage.setTitle("Kelola Opsi Kustom Kategori Coffee - SiBarista");
+        stage.setScene(new javafx.scene.Scene(root));
+        stage.setResizable(false); // Kunci ukuran jendela modal agar tetap rapi
+        stage.showAndWait();
+
+        // Opsional: Jika perlu memuat ulang data dashboard, panggil loadData(); jika tidak, abaikan.
+    }
 }

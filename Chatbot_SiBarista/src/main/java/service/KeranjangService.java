@@ -51,13 +51,7 @@ public class KeranjangService {
         });
     }
 
-    /** Hapus item tertentu sepenuhnya. */
-    public void hapusProduk(Produk produk, List<String> kustomisasi) {
-        items.removeIf(item ->
-                item.getProduk().getNamaProduk().equalsIgnoreCase(produk.getNamaProduk()) &&
-                        item.getKustomisasi().equals(kustomisasi)
-        );
-    }
+
 
     // --- Method lainnya tetap sama ---
     public void kosongkanKeranjang() { items.clear(); }

@@ -1,5 +1,7 @@
 package service;
-
+import model.OpsiKustom;
+import java.util.ArrayList;
+import java.util.List;
 import database.Database;
 import model.Produk;
 import org.mindrot.jbcrypt.BCrypt;
@@ -71,6 +73,55 @@ public class AdminService {
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, idProduk);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<OpsiKustom> getSemuaOpsiKustom() {
+        List<OpsiKustom> list = new ArrayList<>();
+        String query = "SELECT * FROM opsi_kustom WHERE id_kategori = 1"; // 1 adalah ID Kategori Coffee
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                list.add(new OpsiKustom(
+                        rs.getInt("id_opsi"), // Sesuaikan dengan nama kolom primary key di DB-mu (misal id_opsi)
+                        rs.getString("nama_opsi"),
+                        rs.getString("grup_opsi"),
+                        rs.getInt("id_kategori")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public boolean tambahOpsiKustom(String namaOpsi, String grupOpsi) {
+        String query = "INSERT INTO opsi_kustom (nama_opsi, grup_opsi, id_kategori) VALUES (?, ?, 1)";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, namaOpsi);
+            pstmt.setString(2, grupOpsi);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean hapusOpsiKustom(int idOpsi) {
+        String query = "DELETE FROM opsi_kustom WHERE id_opsi = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, idOpsi);
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();

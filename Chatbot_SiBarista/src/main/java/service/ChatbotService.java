@@ -351,7 +351,6 @@ public class ChatbotService {
 
         // Ambil semua nama produk dari database untuk dicek satu per satu
         String query = "SELECT nama_produk FROM produk";
-
         try (Connection conn = Database.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
