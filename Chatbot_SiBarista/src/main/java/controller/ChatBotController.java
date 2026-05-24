@@ -51,7 +51,7 @@ public class ChatBotController {
     @FXML
     private javafx.scene.layout.HBox menuChat;
 
-    private final ChatbotService chatbotService = new ChatbotService();
+    private final ChatbotService chatbotService = ChatbotService.getInstance();
     private final KeranjangService keranjangService = KeranjangService.getInstance();
 
     /**

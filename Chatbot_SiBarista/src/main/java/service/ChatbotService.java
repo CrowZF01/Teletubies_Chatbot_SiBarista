@@ -13,6 +13,10 @@ public class ChatbotService {
 
     private static ChatbotService instance;
 
+    private ChatbotService(){
+
+    }
+
     public static ChatbotService getInstance() {
         if (instance == null) {
             instance = new ChatbotService();

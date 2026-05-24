@@ -20,27 +20,33 @@ public class Keranjang {
         this.kustomisasi = kustomisasi;
     }
 
-    // Di class model.Keranjang
-
-
     // ── Getter & Setter ───────────────────────────────────────────────────────
 
-    public Produk getProduk()          { return produk; }
-    public void   setProduk(Produk p)  { this.produk = p; }
+    public Produk getProduk() {
+        return produk;
+    }
+    public void setProduk(Produk p) {
+        this.produk = p;
+    }
 
-    public int  getJumlah()            { return jumlah; }
+    public int getJumlah() {
+        return jumlah;
+    }
 
     public List<String> getKustomisasi() {
         return kustomisasi;
     }
 
-
-
     public double getSubtotal() {
         return produk.getHarga() * jumlah;
     }
 
-    public void tambah() { this.jumlah++; }
+    public void tambah() {
+        this.jumlah++;
+    }
 
-    public void kurang() { if (this.jumlah > 0) this.jumlah--; }
+    public void kurang() {
+        if (this.jumlah > 0)
+            this.jumlah--;
+    }
 }

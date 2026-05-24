@@ -41,7 +41,7 @@ public class DashBoardController {
     @FXML private Label lblTotalProduk, lblTersedia, lblHabis;
     @FXML private TextField txtSearch;
 
-    private ChatbotService chatbotService = new ChatbotService();
+    private ChatbotService chatbotService = ChatbotService.getInstance();
     private AdminService adminService = new AdminService();
 
     private ObservableList<Produk> masterData = FXCollections.observableArrayList();
