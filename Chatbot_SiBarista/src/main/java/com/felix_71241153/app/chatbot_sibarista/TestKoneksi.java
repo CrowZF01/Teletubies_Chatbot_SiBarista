@@ -1,6 +1,4 @@
 package com.felix_71241153.app.chatbot_sibarista;
-
-
 import database.Database;
 
 public class TestKoneksi {

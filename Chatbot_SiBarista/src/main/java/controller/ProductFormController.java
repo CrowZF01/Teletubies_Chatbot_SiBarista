@@ -16,6 +16,15 @@ import javafx.scene.image.ImageView;
 import java.io.File;
 import java.io.InputStream;
 
+/**
+ * Controller untuk mengelola form input data produk (Tambah Baru vs Edit Produk).
+ * Controller ini melayani product-form-view.fxml.
+ * 1. Mengubah judul dinamis (Mode Tambah Menu vs Edit Menu).
+ * 2. Mengambil gambar lokal komputer user dan otomatis menyalinnya (Files.copy) 
+ *    ke dalam folder resources proyek (src/main/resources/images) serta folder build (target/classes/images) 
+ *    agar gambar bisa langsung dirender saat aplikasi sedang aktif.
+ * 3. Menangani penentuan status ketersediaan stok produk (Tersedia / Habis).
+ */
 public class ProductFormController {
     @FXML private TextField txtId, txtNama, txtHarga;
     @FXML private TextArea txtDeskripsi;

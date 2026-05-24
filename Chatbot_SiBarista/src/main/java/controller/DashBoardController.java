@@ -20,6 +20,19 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Controller untuk mengelola antarmuka Dashboard Admin (Admin Dashboard Controller).
+ * Controller ini menghubungkan file dashboard-view.fxml.
+ * Logika tingkat lanjut yang dimilikinya:
+ * 1. Mengisi data ke TableView secara otomatis dengan memetakan atribut objek ke kolom tabel 
+ *    menggunakan PropertyValueFactory.
+ * 2. Menyediakan fitur pencarian instan (real-time filtering) menggunakan `FilteredList` 
+ *    berdasarkan teks pencarian (nama produk, kategori, deskripsi) yang dimasukkan di text field txtSearch.
+ * 3. Menghitung statistik stok produk secara fungsional (total produk, jumlah produk yang tersedia, 
+ *    dan yang habis) menggunakan Java Stream API.
+ * 4. Membuka dialog box pop-up modaly (Modality.APPLICATION_MODAL) untuk form tambah, edit produk, 
+ *    dan kelola opsi kustomisasi kopi.
+ */
 public class DashBoardController {
     @FXML private TableView<Produk> productTable;
     @FXML private TableColumn<Produk, Void> colNo; // Kolom No Urut
@@ -31,13 +44,12 @@ public class DashBoardController {
     private ChatbotService chatbotService = new ChatbotService();
     private AdminService adminService = new AdminService();
 
-    // 1. Deklarasikan List di tingkat class agar tidak ter-reset
     private ObservableList<Produk> masterData = FXCollections.observableArrayList();
     private FilteredList<Produk> filteredData;
 
     @FXML
     public void initialize() {
-        // Setup Kolom No Urut
+        // Kolom No Urut
         colNo.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(Void item, boolean empty) {
@@ -53,7 +65,7 @@ public class DashBoardController {
         colHarga.setCellValueFactory(new PropertyValueFactory<>("harga"));
         colStok.setCellValueFactory(new PropertyValueFactory<>("statusStok"));
 
-        // 2. Setup FilteredList (Search Logic)
+        // FilteredList (Search Logic)
         filteredData = new FilteredList<>(masterData, p -> true);
 
         // Listener untuk TextField Search
@@ -68,15 +80,14 @@ public class DashBoardController {
 
                 return false;
             });
-            // Update statistik setiap kali filter berubah (opsional)
+            // Update statistik setiap kali filter berubah
             updateStatistics(filteredData);
         });
 
-        // 3. Setup SortedList agar tabel tetap bisa di-sort oleh user
+        // SortedList agar tabel tetap bisa di-sort oleh user
         SortedList<Produk> sortedData = new SortedList<>(filteredData);
         sortedData.comparatorProperty().bind(productTable.comparatorProperty());
 
-        // 4. PASANG DATA KE TABEL (Hanya sekali di sini)
         productTable.setItems(sortedData);
 
         loadData();
@@ -86,8 +97,8 @@ public class DashBoardController {
         try {
             List<Produk> listProduk = chatbotService.getDaftarProduk();
 
-            // 5. JANGAN gunakan productTable.setItems() lagi di sini.
-            // Cukup update masterData-nya saja, TableView akan otomatis terupdate.
+            // gunakan productTable.setItems().
+            // TableView akan otomatis terupdate.
             masterData.setAll(listProduk);
 
             updateStatistics(masterData);
@@ -172,9 +183,8 @@ public class DashBoardController {
         stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
         stage.setTitle("Kelola Opsi Kustom Kategori Coffee - SiBarista");
         stage.setScene(new javafx.scene.Scene(root));
-        stage.setResizable(false); // Kunci ukuran jendela modal agar tetap rapi
+        stage.setResizable(false);
         stage.showAndWait();
 
-        // Opsional: Jika perlu memuat ulang data dashboard, panggil loadData(); jika tidak, abaikan.
     }
 }

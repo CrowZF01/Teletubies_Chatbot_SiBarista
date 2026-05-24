@@ -3,8 +3,10 @@ package model;
 import java.util.List;
 
 /**
- * Model satu item di dalam keranjang belanja.
- * Menyimpan referensi ke Produk dan jumlah (quantity).
+ * Model data yang merepresentasikan satu baris item belanjaan di dalam keranjang (Cart Item Model).
+ * 1. jumlah (Kuantitas belanjaan).
+ * 2. kustomisasi (Daftar modifikasi rasa/suhu kopi yang dipilih).
+ * Kelas ini juga melakukan kalkulasi bisnis lokal mandiri, seperti menghitung subtotal belanjaan.
  */
 public class Keranjang {
 
@@ -33,16 +35,12 @@ public class Keranjang {
     }
 
 
-    // ── Kalkulasi ─────────────────────────────────────────────────────────────
 
-    /** Subtotal = harga × jumlah. */
     public double getSubtotal() {
         return produk.getHarga() * jumlah;
     }
 
-    /** Tambah jumlah 1. */
     public void tambah() { this.jumlah++; }
 
-    /** Kurangi jumlah 1 (minimal 0). */
     public void kurang() { if (this.jumlah > 0) this.jumlah--; }
 }

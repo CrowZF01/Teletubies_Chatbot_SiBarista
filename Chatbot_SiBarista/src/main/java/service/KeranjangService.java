@@ -5,6 +5,12 @@ import model.Produk;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service Layer yang mengelola status keranjang belanja secara global (Cart State Manager).
+ * KeranjangService didesain dengan pola Singleton (getInstance()) untuk memastikan bahwa hanya ada 
+ * satu objek keranjang belanja yang aktif sepanjang aplikasi berjalan. Dengan begitu, data keranjang 
+ * yang diakses oleh ChatBotController dan KeranjangController tetap sinkron dan konsisten.
+ */
 public class KeranjangService {
 
     private static KeranjangService instance;
@@ -17,10 +23,14 @@ public class KeranjangService {
         return instance;
     }
 
+    // List penampung item belanja
     private final List<Keranjang> items = new ArrayList<>();
 
     /**
-     * Tambah produk ke keranjang dengan kustomisasi.
+     * Menambahkan produk ke dalam keranjang dengan mempertimbangkan kustomisasi.
+     * Logika penggabungan barang:
+     * Jika nama produk DAN daftar kustomisasinya sama persis dengan yang sudah ada di keranjang,
+     * sistem cukup menambah kuantitas jumlahnya (quantity++), bukan membuat baris baru.
      */
     public void tambahProduk(Produk produk, List<String> kustomisasi) {
         for (Keranjang item : items) {
@@ -37,7 +47,8 @@ public class KeranjangService {
     }
 
     /**
-     * Kurangi jumlah produk berdasarkan kustomisasi spesifik.
+     * Mengurangi kuantitas produk di keranjang berdasarkan kustomisasi spesifik.
+     * Jika jumlah item menjadi 0 setelah dikurangi, item tersebut akan otomatis dihapus dari keranjang.
      */
     public void kurangiProduk(Produk produk, List<String> kustomisasi) {
         items.removeIf(item -> {
@@ -51,11 +62,11 @@ public class KeranjangService {
         });
     }
 
-
-
-    // --- Method lainnya tetap sama ---
     public void kosongkanKeranjang() { items.clear(); }
+    
     public List<Keranjang> getItems() { return items; }
+
     public double getTotalHarga() { return items.stream().mapToDouble(Keranjang::getSubtotal).sum(); }
+    
     public int getTotalJumlah() { return items.stream().mapToInt(Keranjang::getJumlah).sum(); }
 }

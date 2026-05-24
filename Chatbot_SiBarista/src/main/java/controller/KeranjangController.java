@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import model.Keranjang;
 import model.Produk;
 import service.KeranjangService;
+import service.ChatbotService;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,6 +23,16 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Controller untuk mengelola antarmuka katalog menu dan keranjang belanja (Cart Controller).
+ * Controller ini melayani keranjang-view.fxml.
+ * Fitur dinamis dan penting yang dilakukannya:
+ * 1. Menampilkan daftar menu di katalog menggunakan panel kartu dinamis (buatKartuProduk) yang dibentuk dari file FXML kartu-produk.fxml.
+ * 2. Membangun panel kustomisasi menu secara dinamis menggunakan database opsi_kustom. Opsi kustomisasi berupa RadioButton 
+ *    yang dikelompokkan dalam ToggleGroup agar user hanya bisa memilih satu opsi per kategori kustomisasi (misal: hanya "Panas" atau "Dingin").
+ * 3. Menangani filter katalog secara real-time berdasarkan kategori (Kopi, Non-Kopi, Snack).
+ * 4. Menyajikan visual daftar barang belanjaan di sebelah kanan, memperbarui kuantitas (tambah/kurang), dan menghitung total harga checkout.
+ */
 public class KeranjangController {
 
     @FXML private VBox menuListContainer;
@@ -34,7 +45,7 @@ public class KeranjangController {
     @FXML private Button btnFilterMakanan;
 
     private final KeranjangService keranjangService = KeranjangService.getInstance();
-    private final Produk produkModel = new Produk();
+    private final ChatbotService chatbotService = ChatbotService.getInstance();
     private static final NumberFormat RUPIAH = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
 
     @FXML
@@ -47,7 +58,7 @@ public class KeranjangController {
     private void muatSemuaMenu() {
         if (sectionTitle != null) sectionTitle.setText("Semua Menu");
         try {
-            tampilkanDaftarProduk(produkModel.getAllProduk());
+            tampilkanDaftarProduk(chatbotService.getDaftarProduk());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -101,7 +112,7 @@ public class KeranjangController {
     private void muatMenuByKategori(int idKategori, String judul) {
         if (sectionTitle != null) sectionTitle.setText(judul);
         try {
-            tampilkanDaftarProduk(produkModel.getProdukByKategori(idKategori));
+            tampilkanDaftarProduk(chatbotService.getProdukByKategori(idKategori));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -119,7 +130,7 @@ public class KeranjangController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/chatbot_sibarista/kartu-produk.fxml"));
             final HBox kartu = loader.load();
-
+            //masukkan data ke UI
             ((Label) kartu.lookup("#lblNama")).setText(p.getNamaProduk());
             ((Label) kartu.lookup("#lblHarga")).setText(formatRupiah(p.getHarga()));
 
@@ -141,6 +152,7 @@ public class KeranjangController {
             panelKustom.setManaged(false);
 
             if (btnDropdown != null) {
+                //generate opsi kustomisasi
                 java.util.Map<String, List<String>> opsiMap = service.ChatbotService.getInstance().getOpsiKustom(Integer.parseInt(p.getIdProduk()));
 
                 if (opsiMap == null || opsiMap.isEmpty()) {
@@ -176,7 +188,7 @@ public class KeranjangController {
                     }
 
                     wadahGrup.getChildren().add(panelKustom);
-
+                    //handler tombol custom
                     btnDropdown.setOnAction(new javafx.event.EventHandler<javafx.event.ActionEvent>() {
                         @Override
                         public void handle(javafx.event.ActionEvent event) {
@@ -264,12 +276,12 @@ public class KeranjangController {
             HBox baris = loader.load();
             Produk p = item.getProduk();
 
-            // 1. Isi Data Utama
+            //Isi Data Utama
             ((Label) baris.lookup("#lblNama")).setText(p.getNamaProduk());
             ((Label) baris.lookup("#lblSubtotal")).setText(formatRupiah(item.getSubtotal()));
             ((Label) baris.lookup("#lblJumlah")).setText(String.valueOf(item.getJumlah()));
 
-            // 2. LOGIKA BARU: Tampilkan Kustomisasi (Jika Ada)
+            //Tampilkan Kustomisasi (Jika Ada)
             Label lblKustom = (Label) baris.lookup("#lblKustom");
             List<String> listKustom = item.getKustomisasi();
 
@@ -284,9 +296,6 @@ public class KeranjangController {
                 lblKustom.setManaged(false);
             }
 
-            // 3. PERBAIKAN BUG: Aksi Tombol Kurang & Tambah
-            // Sebelumnya kamu pakai 'new java.util.ArrayList<>()', itu yang bikin datanya reset!
-            // Sekarang kita harus pakai kustomisasi bawaan dari 'item'
             ((Button) baris.lookup("#btnKurang")).setOnAction(e -> {
                 keranjangService.kurangiProduk(p, item.getKustomisasi());
                 refreshKeranjang();

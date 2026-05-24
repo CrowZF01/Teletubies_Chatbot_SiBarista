@@ -4,11 +4,16 @@ import  java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * Kelas konfigurasi koneksi database (Database Connection Manager).
+ * Kelas koneksi database menggunakan driver JDBC Driver Manager.
+ * Menggunakan kredensial lokal (root tanpa password) dengan database bernama 'sibarista'.
+ * Metode static getConnection() dipanggil di seluruh Service Layer untuk mendapatkan objek Connection.
+ */
 public class Database {
     private static final String url = "jdbc:mysql://localhost:3306/sibarista";
     private static final String username = "root" ;
     private static final String password = "";
-
     public static Connection getConnection() throws SQLException{
         return DriverManager.getConnection(url, username, password);
     }
@@ -20,7 +25,4 @@ public class Database {
             System.out.println("Koneksi gagal : " + e.getMessage());
         }
     }
-
-
-
 }

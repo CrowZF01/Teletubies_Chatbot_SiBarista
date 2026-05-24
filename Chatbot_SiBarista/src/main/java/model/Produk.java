@@ -1,15 +1,12 @@
 package model;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-
-import database.Database;
-
+/**
+ * Model data yang merepresentasikan entitas menu kafe (Produk Model).
+ * Kelas ini berfungsi sebagai penampung
+ * data (Data Transfer Object) untuk mempermudah transfer informasi produk dari database 
+ * menuju user interface JavaFX. Atribut di dalamnya memetakan kolom-kolom tabel 'produk' 
+ * seperti id_produk, nama_produk, kategori, deskripsi, harga, stok, dan gambar.
+ */
 public class Produk {
     private String idProduk;
     private String namaProduk;
@@ -104,54 +101,5 @@ public class Produk {
                 ", nama='" + namaProduk + '\'' +
                 ", kategori='" + namaKategori + '\'' +
                 '}';
-    }
-
-
-    public List<Produk> getAllProduk() throws SQLException {
-        List<Produk> listProduk = new ArrayList<>();
-        String query = "SELECT * FROM produk";
-        try (Connection conn = Database.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                Produk p = new Produk();
-                p.setIdProduk(rs.getString("id_produk"));
-                p.setNamaProduk(rs.getString("nama_produk"));
-                p.setNamaKategori(rs.getString("id_kategori"));
-                p.setDeskripsi(rs.getString("deskripsi"));
-                p.setHarga(rs.getInt("harga"));
-                p.setStatusStok(rs.getString("status_stok"));
-                p.setGambar(rs.getString("gambar"));
-
-                listProduk.add(p);
-            }
-        }
-        return listProduk;
-    }
-
-    public List<Produk> getProdukByKategori(int idKategori) throws SQLException {
-        List<Produk> listProduk = new ArrayList<>();
-        String query = "SELECT * FROM produk WHERE id_kategori = ?";
-
-        try (Connection conn = Database.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, idKategori);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Produk p = new Produk();
-                    p.setIdProduk(rs.getString("id_produk"));
-                    p.setNamaProduk(rs.getString("nama_produk"));
-                    p.setNamaKategori(rs.getString("id_kategori"));
-                    p.setDeskripsi(rs.getString("deskripsi"));
-                    p.setHarga(rs.getInt("harga"));
-                    p.setStatusStok(rs.getString("status_stok"));
-                    p.setGambar(rs.getString("gambar"));
-
-                    listProduk.add(p);
-                }
-            }
-        }
-        return listProduk;
     }
 }

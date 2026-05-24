@@ -11,6 +11,12 @@ import service.AdminService;
 
 import java.util.List;
 
+/**
+ * Controller untuk mengelola daftar opsi kustomisasi kopi (Opsi Kustom Form Controller).
+ * Controller ini menangani tampilan popup modal opsi-form-view.fxml.
+ * Berfungsi untuk menambah dan menghapus opsi modifikasi menu kopi (misalnya menambahkan pilihan
+ * "Suhu: Hangat" atau "Ukuran: Large") langsung ke database opsi_kustom secara real-time.
+ */
 public class OpsiFormController {
 
     @FXML private TableView<OpsiKustom> opsiTable;

@@ -7,9 +7,11 @@ import model.Produk;
 import org.mindrot.jbcrypt.BCrypt;
 import java.sql.*;
 
+/**
+ * Service Layer yang mengelola seluruh proses bisnis administrasi (Admin Core Logic).
+ * Menangani fungsi verifikasi login admin, manajemen CRUD menu produk, serta kustomisasi opsi menu.
+ */
 public class AdminService {
-
-    //query cek login
     public boolean login(String username, String password) {
         String query = "SELECT password FROM admin WHERE username = ?";
 
@@ -35,8 +37,6 @@ public class AdminService {
         return false;
     }
 
-
-    //query untuk nyimpen produk
     public boolean simpanProduk(Produk p, boolean isEdit) {
         String query;
         if (isEdit) {
@@ -67,7 +67,7 @@ public class AdminService {
         }
     }
 
-    //query untuk hapus produk
+
     public boolean hapusProduk(String idProduk) {
         String query = "DELETE FROM produk WHERE id_produk = ?";
         try (Connection conn = Database.getConnection();
@@ -79,6 +79,7 @@ public class AdminService {
             return false;
         }
     }
+
 
     public List<OpsiKustom> getSemuaOpsiKustom() {
         List<OpsiKustom> list = new ArrayList<>();
@@ -102,6 +103,7 @@ public class AdminService {
         return list;
     }
 
+
     public boolean tambahOpsiKustom(String namaOpsi, String grupOpsi) {
         String query = "INSERT INTO opsi_kustom (nama_opsi, grup_opsi, id_kategori) VALUES (?, ?, 1)";
         try (Connection conn = Database.getConnection();
@@ -115,6 +117,7 @@ public class AdminService {
             return false;
         }
     }
+
 
     public boolean hapusOpsiKustom(int idOpsi) {
         String query = "DELETE FROM opsi_kustom WHERE id_opsi = ?";

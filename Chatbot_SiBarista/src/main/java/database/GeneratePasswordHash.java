@@ -2,6 +2,7 @@ package database;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+
 public class GeneratePasswordHash {
     public static void main(String[] args) {
         String passwordAsli = "admin123";

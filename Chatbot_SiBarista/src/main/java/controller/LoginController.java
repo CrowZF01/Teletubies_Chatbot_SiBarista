@@ -11,6 +11,11 @@ import service.AdminService;
 
 import java.io.IOException;
 
+/**
+ * Controller ini menghubungkan file view login-view.fxml dengan logika database di AdminService.
+ * Bertugas memvalidasi username & password, menampilkan dialog box peringatan jika login gagal,
+ * serta memandu pengguna masuk ke dashboard menu admin jika verifikasi sukses.
+ */
 public class LoginController {
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;

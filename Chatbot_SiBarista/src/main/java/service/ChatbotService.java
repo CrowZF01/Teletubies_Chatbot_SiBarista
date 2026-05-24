@@ -20,7 +20,11 @@ public class ChatbotService {
         return instance;
     }
 
-    //query untuk menampilkan daftar produk
+    /**
+     * Mengambil daftar seluruh produk yang ada di database.
+     * Menggunakan query SQL JOIN antara tabel 'produk' dan 'kategori' untuk memetakan id_kategori 
+     * menjadi nama_kategori secara dinamis dan menampungnya ke dalam list objek Produk.
+     */
     public List<Produk> getDaftarProduk() throws SQLException {
         List<Produk> list = new ArrayList<>();
 
@@ -29,9 +33,9 @@ public class ChatbotService {
                 "FROM produk p " +
                 "JOIN kategori k ON p.id_kategori = k.id_kategori";
 
-        try (Connection conn = Database.getConnection(); //koneksi
-             Statement stmt = conn.createStatement(); //untuk querynya
-             ResultSet rs = stmt.executeQuery(query)) { //untuk memberikan datanya dari db
+        try (Connection conn = Database.getConnection(); // koneksi
+                Statement stmt = conn.createStatement(); // untuk querynya
+                ResultSet rs = stmt.executeQuery(query)) { // untuk memberikan datanya dari db
 
             while (rs.next()) {
                 list.add(new Produk(
@@ -41,8 +45,7 @@ public class ChatbotService {
                         rs.getString("deskripsi"),
                         rs.getInt("harga"),
                         rs.getString("status_stok"),
-                        rs.getString("gambar")
-                ));
+                        rs.getString("gambar")));
             }
         } catch (SQLException e) {
             System.out.println("Kesalahan Query: " + e.getMessage());
@@ -50,7 +53,15 @@ public class ChatbotService {
         return list;
     }
 
-    //untuk ngecek klo pesannya tidak boleh kosong
+    /**
+     * Alur eksekusi logika:
+     * 1. Memvalidasi apakah pesan kosong (validasiTeks).
+     * 2. Menormalisasi pesan (menghapus tanda baca & mengubah huruf kecil semua) lewat normalisasiInput().
+     * 3. Melakukan pencocokan pola kata kunci (sapaan, bantuan/help, kategori produk, menu umum, atau rekomendasi).
+     * 4. Mencari nama produk spesifik dalam kalimat (string matching dengan nama produk di DB).
+     * 5. Jika produk ditemukan, mengembalikan detail spesifikasi produk.
+     * 6. Jika tidak ada aturan yang cocok, mengembalikan pesan fallback (balasan default).
+     */
     public String prosesInput(String pesan) throws SQLException {
         if (!validasiTeks(pesan)) {
             return "Silakan ketik pesan terlebih dahulu.";
@@ -73,7 +84,7 @@ public class ChatbotService {
         if (input.contains("bantuan") || input.contains("help")
                 || input.contains("tolong") || input.contains("cara pakai")
                 || input.contains("harus ketik apa") || input.contains("saya bingung")
-                ||input.contains("helep") || input.contains("tulung") || input.contains("ketik apa?")
+                || input.contains("helep") || input.contains("tulung") || input.contains("ketik apa?")
                 || input.contains("ketik apa") || input.contains("ketik apa ya?") || input.contains("ketik apa ya")) {
             return balasanBantuan();
         }
@@ -98,11 +109,12 @@ public class ChatbotService {
             return balasanMenu();
         }
 
-        if(input.contains("rekomendasi") || input.contains("rekomen") || input.contains("saran") || input.contains("best seller")){
+        if (input.contains("rekomendasi") || input.contains("rekomen") || input.contains("saran")
+                || input.contains("best seller")) {
             return balasanRekomendasi();
         }
 
-        //untuk mencari nama produk
+        // untuk mencari nama produk
         String produkDitemukan = cariNamaProdukDalamKalimat(input);
         if (produkDitemukan != null) {
             Produk p = balasanDetail(produkDitemukan); // Ambil objek Produk-nya dulu
@@ -121,26 +133,24 @@ public class ChatbotService {
         return balasanFallback();
     }
 
-
-
-    //validasi teks
+    // validasi teks
     public boolean validasiTeks(String pesan) {
         return pesan != null && !pesan.trim().isEmpty();
     }
 
-    //balasan menu
+    // balasan menu
     public String balasanMenu() {
         return """
                 Baik! Silakan pilih kategori menu yang ingin Anda jelajahi:
                 - Coffee
                 - Non-Coffee
                 - Snack
-                
+
                 Ketik salah satu kategori di atas.
                 """;
     }
 
-    //balasan daftar menu sesuai kategori
+    // balasan daftar menu sesuai kategori
     public String balasanKategori(String kategori) {
         StringBuilder hasil = new StringBuilder();
         hasil.append("Berikut daftar menu kategori ").append(kategori).append(":\n");
@@ -149,7 +159,7 @@ public class ChatbotService {
         String query = "SELECT produk.nama_produk FROM produk JOIN kategori ON produk.id_kategori = kategori.id_kategori WHERE kategori.nama_kategori = ?";
 
         try (Connection conn = Database.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             pstmt.setString(1, kategori);
             ResultSet rs = pstmt.executeQuery();
@@ -170,21 +180,20 @@ public class ChatbotService {
         return hasil.toString();
     }
 
-
-    //untuk balasan detail produk
+    // untuk balasan detail produk
     public Produk balasanDetail(String namaMenu) {
         String input = normalisasiInput(namaMenu);
 
         String query = """
-            SELECT produk.*, kategori.nama_kategori
-            FROM produk
-            JOIN kategori ON produk.id_kategori = kategori.id_kategori
-            WHERE LOWER(produk.nama_produk) = LOWER(?)
-            LIMIT 1
-            """;
+                SELECT produk.*, kategori.nama_kategori
+                FROM produk
+                JOIN kategori ON produk.id_kategori = kategori.id_kategori
+                WHERE LOWER(produk.nama_produk) = LOWER(?)
+                LIMIT 1
+                """;
 
         try (Connection conn = Database.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             pstmt.setString(1, input);
             ResultSet rs = pstmt.executeQuery();
@@ -197,8 +206,7 @@ public class ChatbotService {
                         rs.getString("deskripsi"),
                         rs.getInt("harga"),
                         rs.getString("status_stok"),
-                        rs.getString("gambar")
-                );
+                        rs.getString("gambar"));
             }
 
         } catch (SQLException e) {
@@ -208,28 +216,28 @@ public class ChatbotService {
         return null;
     }
 
-    //untuk mencari nama produk dalam kalimat
-    public String cariNamaProdukDalamKalimat(String input){
+    // untuk mencari nama produk dalam kalimat
+    public String cariNamaProdukDalamKalimat(String input) {
         String query = "SELECT nama_produk FROM produk";
 
         try (Connection conn = Database.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()){
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
                 String namaProduk = rs.getString("nama_produk").toLowerCase();
 
-                if (input.contains(namaProduk)){
+                if (input.contains(namaProduk)) {
                     return namaProduk;
                 }
 
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    //fallback
+    // fallback
     public String balasanFallback() {
         return """
                 Maaf, saya belum memahami pesan Anda.
@@ -246,7 +254,13 @@ public class ChatbotService {
                 """;
     }
 
-    //normalisasi inputan
+    /**
+     * Melakukan normalisasi teks input agar proses pencocokan pola kata kunci (*pattern matching*) berjalan akurat.
+     * - Menghilangkan spasi kosong di awal dan akhir teks (.trim()).
+     * - Mengubah seluruh teks menjadi huruf kecil (.toLowerCase()).
+     * - Menghapus tanda baca umum seperti titik, koma, tanda seru, dan tanda tanya (.replaceAll("[.,!?]", "")).
+     * - Merapikan spasi ganda atau berlebih menjadi satu spasi saja (.replaceAll("\\s+", " ")).
+     */
     public String normalisasiInput(String pesan) {
         if (pesan == null) {
             return "";
@@ -255,11 +269,11 @@ public class ChatbotService {
         return pesan
                 .trim()
                 .toLowerCase()
-                .replaceAll("[.,!?]", "")   // hapus tanda baca sederhana
-                .replaceAll("\\s+", " ");   // rapikan spasi berlebih
+                .replaceAll("[.,!?]", "") // hapus tanda baca sederhana
+                .replaceAll("\\s+", " "); // rapikan spasi berlebih
     }
 
-    //balasan sapaan
+    // balasan sapaan
     public String balasanSapaan() {
         return """
                 Halo, saya SiBarista ☕
@@ -271,7 +285,7 @@ public class ChatbotService {
                 """;
     }
 
-    //balasan bantuan
+    // balasan bantuan
     public String balasanBantuan() {
         return """
                 Panduan penggunaan chatbot SiBarista:
@@ -291,7 +305,7 @@ public class ChatbotService {
                 """;
     }
 
-    //format untuk detail produk
+    // format untuk detail produk
     public String formatDetailProduk(Produk produk) {
         return """
                 Detail Menu:
@@ -309,42 +323,49 @@ public class ChatbotService {
                 produk.getNamaKategori(),
                 formatRupiah(produk.getHarga()),
                 produk.getDeskripsi(),
-                produk.getStatusStok()
-        );
+                produk.getStatusStok());
     }
 
-    //format rupiah
+    // format rupiah
     private String formatRupiah(int harga) {
         String angka = String.format("%,d", harga).replace(',', '.');
         return "Rp" + angka;
     }
 
-    //balasan untuk rekomendasi (random dari bd dipilih 2)
-    public String balasanRekomendasi(){
+    /**
+     * Mengambil rekomendasi menu dari database secara acak (random).
+     * Memilih 2 produk secara acak yang berstatus stok 'Tersedia' menggunakan query SQL 'ORDER BY RAND() LIMIT 2'.
+     */
+    public String balasanRekomendasi() {
         StringBuilder hasil = new StringBuilder();
         hasil.append("Ini adalah beberapa rekomendasi dari SiBarista :\n\n");
         String query = """
-                SELECT produk.nama_produk, kategori.nama_kategori, produk.harga FROM produk 
+                SELECT produk.nama_produk, kategori.nama_kategori, produk.harga FROM produk
                 JOIN kategori ON produk.id_kategori = kategori.id_kategori
                 WHERE produk.status_stok = 'Tersedia'
                 ORDER BY RAND() LIMIT 2
                 """;
         try (Connection conn = Database.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 hasil.append("- ").append(rs.getString("nama_produk"))
                         .append(" (").append(rs.getString("nama_kategori")).append(")\n")
                         .append("   Harga: ").append(formatRupiah(rs.getInt("harga"))).append("\n\n");
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             return "Maaf, rekomendasi untuk sekarang tidak ada";
         }
         hasil.append("Ketik nama produk diatas untuk melihat detailnya");
         return hasil.toString();
     }
 
-    //cari produk dalam kalimat (bisa lebih dari 1)
+    /**
+     * Memindai kalimat pengguna untuk mendeteksi apakah terdapat satu atau lebih nama produk.
+     * 1. Mengambil seluruh daftar nama produk yang ada di database.
+     * 2. Mencocokkan apakah kalimat pengguna mengandung nama produk tersebut (case-insensitive).
+     * 3. Jika cocok, sistem memuat objek Produk secara lengkap dari database dan menambahkannya ke list hasil.
+     */
     public List<Produk> cariSemuaProdukDalamKalimat(String pesan) {
         List<Produk> produkDitemukan = new ArrayList<>();
         String input = normalisasiInput(pesan);
@@ -352,8 +373,8 @@ public class ChatbotService {
         // Ambil semua nama produk dari database untuk dicek satu per satu
         String query = "SELECT nama_produk FROM produk";
         try (Connection conn = Database.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query)) {
 
             while (rs.next()) {
                 String namaProduk = rs.getString("nama_produk").toLowerCase();
@@ -373,33 +394,21 @@ public class ChatbotService {
         return produkDitemukan;
     }
 
-//    public List<String> getOpsiKustom(int idProduk) {
-//        List<String> listOpsi = new ArrayList<>();
-//        String query = "SELECT nama_opsi FROM opsi_kustom WHERE id_kategori = (SELECT id_kategori FROM produk WHERE id_produk = ?)";
-//
-//        try (Connection conn = Database.getConnection();
-//             PreparedStatement pstmt = conn.prepareStatement(query)) {
-//            pstmt.setInt(1, idProduk);
-//            ResultSet rs = pstmt.executeQuery();
-//            while (rs.next()) {
-//                listOpsi.add(rs.getString("nama_opsi"));
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return listOpsi;
-//    }
-
+    /**
+     * Mengambil daftar pilihan kustomisasi untuk kategori produk tertentu (khususnya Coffee) dari database.
+     * Hasil pencarian dikelompokkan berdasarkan nama grup (misalnya, grup "Suhu" berisi opsi "Panas" dan "Dingin").
+     * Menggunakan Java 'Map' dengan implementasi 'LinkedHashMap' untuk mempertahankan urutan input database.
+     */
     public Map<String, List<String>> getOpsiKustom(int idProduk) {
         Map<String, List<String>> groupedOptions = new LinkedHashMap<>();
         String query = """
-            SELECT nama_opsi, grup_opsi 
-            FROM opsi_kustom 
-            WHERE id_kategori = (SELECT id_kategori FROM produk WHERE id_produk = ?)
-            """;
+                SELECT nama_opsi, grup_opsi
+                FROM opsi_kustom
+                WHERE id_kategori = (SELECT id_kategori FROM produk WHERE id_produk = ?)
+                """;
 
         try (Connection conn = Database.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             pstmt.setInt(1, idProduk);
             ResultSet rs = pstmt.executeQuery();
@@ -417,5 +426,45 @@ public class ChatbotService {
             e.printStackTrace();
         }
         return groupedOptions;
+    }
+
+    /**
+     * Mengambil daftar produk berdasarkan ID Kategori dari database.
+     * Menggunakan query SQL JOIN antara tabel 'produk' dan 'kategori' untuk memetakan id_kategori 
+     * menjadi nama_kategori secara dinamis dan menampungnya ke dalam list objek Produk.
+     * 
+     * @param idKategori ID unik kategori produk (1 = Coffee, 2 = Non-Coffee, etc).
+     * @return List berisi objek Produk yang termasuk kategori tersebut.
+     * @throws SQLException Jika terjadi gangguan interaksi database.
+     */
+    public List<Produk> getProdukByKategori(int idKategori) throws SQLException {
+        List<Produk> list = new ArrayList<>();
+        String query = """
+                SELECT p.*, k.nama_kategori
+                FROM produk p
+                JOIN kategori k ON p.id_kategori = k.id_kategori
+                WHERE p.id_kategori = ?
+                """;
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            
+            pstmt.setInt(1, idKategori);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new Produk(
+                            rs.getString("id_produk"),
+                            rs.getString("nama_produk"),
+                            rs.getString("nama_kategori"),
+                            rs.getString("deskripsi"),
+                            rs.getInt("harga"),
+                            rs.getString("status_stok"),
+                            rs.getString("gambar")
+                    ));
+                }
+            }
+        }
+        return list;
     }
 }
