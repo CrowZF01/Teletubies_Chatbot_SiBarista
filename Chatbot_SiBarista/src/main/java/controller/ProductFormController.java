@@ -171,9 +171,14 @@ public class ProductFormController {
     @FXML
     private void handleSave() {
         try {
+            if(!isEdit && adminService.cekNamaProdukKembar(txtNama.getText().trim())) {
+                new Alert(Alert.AlertType.ERROR, "Nama produk " + txtNama.getText().trim() + " sudah ada didaftar").show();
+                return;
+            }
+
             // Validasi input (Nama dan Harga tidak boleh kosong)
-            if (txtNama.getText().trim().isEmpty() || txtHarga.getText().trim().isEmpty()) {
-                new Alert(Alert.AlertType.ERROR, "Nama dan Harga wajib diisi!").show();
+            if (txtNama.getText().trim().isEmpty() || txtHarga.getText().trim().isEmpty() || cbKategori.getValue() == null) {
+                new Alert(Alert.AlertType.ERROR, "Nama, Harga dan Kategori wajib diisi!").show();
                 return;
             }
             copyGambarKeFolderImages();

@@ -76,7 +76,7 @@ public class DashBoardController {
                 String lowerCaseFilter = newValue.toLowerCase();
                 if (produk.getNamaProduk().toLowerCase().contains(lowerCaseFilter)) return true;
                 if (produk.getNamaKategori().toLowerCase().contains(lowerCaseFilter)) return true;
-                if (produk.getDeskripsi().toLowerCase().contains(lowerCaseFilter)) return true;
+//                if (produk.getDeskripsi().toLowerCase().contains(lowerCaseFilter)) return true;
 
                 return false;
             });

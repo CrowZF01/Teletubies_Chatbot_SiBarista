@@ -257,10 +257,11 @@ public class ChatBotController {
                             "-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #1C0A00; -fx-padding: 5 0 2 0;");
                     kustomContainer.getChildren().add(lblMenuCostum);
 
-                    opsiMap.forEach((grup, namaOpsi) -> {
-                        Label lblGrup = new Label(grup + ":");
+                    for (Map.Entry<String, List<String>> data : opsiMap.entrySet()) {
+                        String key = data.getKey();
+                        List<String> namaOpsi = data.getValue();
+                        Label lblGrup = new Label(key + ":");
                         lblGrup.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #6B3A2A;");
-
                         ToggleGroup grupTombol = new ToggleGroup();
                         FlowPane fp = new FlowPane(10, 5);
                         bubbleBox.setMaxWidth(450);
@@ -272,7 +273,8 @@ public class ChatBotController {
                             fp.getChildren().add(rb);
                         }
                         kustomContainer.getChildren().addAll(lblGrup, fp);
-                    });
+                    };
+
 
                     bubbleBox.getChildren().add(kustomContainer);
                 }

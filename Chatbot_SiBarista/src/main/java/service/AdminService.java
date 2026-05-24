@@ -131,4 +131,20 @@ public class AdminService {
             return false;
         }
     }
+
+    public boolean cekNamaProdukKembar(String namaProduk) {
+        String query = "SELECT COUNT(*) FROM produk WHERE nama_produk = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, namaProduk);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
