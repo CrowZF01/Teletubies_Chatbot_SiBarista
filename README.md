@@ -63,8 +63,8 @@ Teletubies_Chatbot_SiBarista/
 │   │   │
 │   │   ├── controller/                 # Logika interaksi Antarmuka (UI Controllers)
 │   │   │   ├── ChatBotController.java  # Controller antarmuka chatbot
-│   │   │   ├── DashBoardController.java# Controller dashboard admin
-│   │   │   ├── KeranjangController.java# Controller keranjang belanja
+│   │   │   ├── DashBoardController.java # Controller dashboard admin
+│   │   │   ├── KeranjangController.java # Controller keranjang belanja
 │   │   │   ├── LoginController.java    # Controller login admin
 │   │   │   ├── OpsiFormController.java # Controller form opsi kustom
 │   │   │   └── ProductFormController.java # Controller form tambah/edit produk
